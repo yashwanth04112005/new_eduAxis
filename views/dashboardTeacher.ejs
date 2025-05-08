@@ -3,10 +3,10 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Teachers Weststar Technical College</title>
+		<title>Teachers EduAxis</title>
 		<!-- CSS FILES -->
 		<!-- TODO ADD FAVICON -->
-		<link rel="icon" href="img/favicon.ico" />
+		<link rel="icon" href="img/ea.ico" />
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 			rel="stylesheet"
@@ -42,10 +42,10 @@
 									alt=""
 							/></a>
 						</div>
-						<ul class="uk-navbar-nav uk-visible@m">
+						<!-- <ul class="uk-navbar-nav uk-visible@m">
 							<li><a href="#">Accounts</a></li>
-						</ul>
-						<div class="uk-navbar-item uk-visible@s">
+						</ul> -->
+						<!-- <div class="uk-navbar-item uk-visible@s">
 							<form action="dashboard.html" class="uk-search uk-search-default">
 								<span data-uk-search-icon></span>
 								<input
@@ -54,18 +54,18 @@
 									placeholder="Search"
 								/>
 							</form>
-						</div>
+						</div> -->
 					</div>
 					<div class="uk-navbar-right">
 						<ul class="uk-navbar-nav">
-							<li>
+							<!-- <li>
 								<a
 									href="#"
 									data-uk-icon="icon:user"
 									title="Your profile"
 									data-uk-tooltip
 								></a>
-							</li>
+							</li> -->
 							<% let newMessages; %> <% newMessages =
 							user.messages.filter(themessage => !themessage.read).length %>
 							<li>
@@ -110,7 +110,7 @@
 				<div>
 					<a class="text-nowrap">
 						<img
-							src="img/WesterLogo1.png"
+							src="img/ea.png"
 							width="50"
 							class="rounded-circle"
 							alt="Logo"
@@ -139,12 +139,7 @@
 						data-uk-dropdown="mode: click; pos: bottom-center; animation: uk-animation-slide-bottom-small; duration: 150"
 					>
 						<ul class="uk-nav uk-dropdown-nav uk-text-left">
-							<li>
-								<a href="#"><span data-uk-icon="icon: info"></span> Summary</a>
-							</li>
-							<li>
-								<a href="#"><span data-uk-icon="icon: refresh"></span> Edit</a>
-							</li>
+							
 							<li>
 								<a class="uk-button" href="#modal-center" data-uk-toggle>
 									<span
@@ -154,13 +149,7 @@
 									>Change Password
 								</a>
 							</li>
-							<li class="uk-nav-divider"></li>
-							<li>
-								<a href="#"
-									><span data-uk-icon="icon: trash"></span> Delete Your
-									Account</a
-								>
-							</li>
+							
 							<li class="uk-nav-divider"></li>
 							<li>
 								<a href="/logout"
@@ -220,27 +209,7 @@
 					</li>
 				</ul>
 				<div class="left-content-box uk-margin-top">
-					<h5>Daily Reports</h5>
-					<div>
-						<span class="uk-text-small">Traffic <small>(+50)</small></span>
-						<progress class="uk-progress" value="50" max="100"></progress>
-					</div>
-					<div>
-						<span class="uk-text-small">Income <small>(+78)</small></span>
-						<progress
-							class="uk-progress success"
-							value="78"
-							max="100"
-						></progress>
-					</div>
-					<div>
-						<span class="uk-text-small">Feedback <small>(-12)</small></span>
-						<progress
-							class="uk-progress warning"
-							value="12"
-							max="100"
-						></progress>
-					</div>
+					
 				</div>
 			</div>
 			<div class="bar-bottom">
@@ -257,24 +226,7 @@
 							data-uk-tooltip
 						></a>
 					</li>
-					<li>
-						<a
-							href="#"
-							class="uk-icon-link"
-							data-uk-icon="icon: settings"
-							title="Settings"
-							data-uk-tooltip
-						></a>
-					</li>
-					<li>
-						<a
-							href="#"
-							class="uk-icon-link"
-							data-uk-icon="icon: social"
-							title="Social"
-							data-uk-tooltip
-						></a>
-					</li>
+					
 
 					<li>
 						<a
