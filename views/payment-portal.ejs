@@ -130,7 +130,7 @@
         <h1 class="uk-heading-medium uk-text-center uk-margin-medium-bottom">Payment Portal</h1>
 
         <!-- Shipping Address Section -->
-        <div class="form-section">
+        <!-- <div class="form-section">
             <h2>Shipping Address</h2>
             <div class="saved-addresses" id="savedAddresses">
                 <div class="address-option">
@@ -150,10 +150,10 @@
                     </label>
                 </div>
                 <button class="add-address-btn" onclick="toggleAddressForm()">+ Add New Address</button>
-            </div>
+            </div> -->
 
             <!-- New Address Form -->
-            <div class="new-address-form" id="newAddressForm">
+            <!-- <div class="new-address-form" id="newAddressForm">
                 <h3>Add New Address</h3>
                 <form id="addressForm" onsubmit="saveAddress(event)">
                     <div class="form-grid">
@@ -190,7 +190,7 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </div> -->
 
         <!-- Payment Information Section -->
         <div class="form-section">
@@ -247,37 +247,37 @@
                     </form>
                 </div>
 
-                <div class="payment-option" onclick="togglePaymentForm('cod')">
+                <!-- <div class="payment-option" onclick="togglePaymentForm('cod')">
                     <input type="radio" name="payment" id="cod">
                     <label for="cod">
                         <span data-uk-icon="icon: credit-card"></span>
                         Cash on Delivery
                     </label>
-                </div>
+                </div> -->
             </div>
         </div>
 
         <!-- Order Summary Section -->
         <div class="order-summary">
-            <h2>Order Summary</h2>
+            <h2>Fee Details</h2>
             <div class="summary-item">
-                <span>Subtotal</span>
-                <span>₹1000.00</span>
+                <span>Tuition Fee</span>
+                <span>₹100000.00</span>
             </div>
             <div class="summary-item">
-                <span>Shipping</span>
-                <span>₹50.00</span>
+                <span>Mess Fee</span>
+                <span>₹5000.00</span>
             </div>
             <div class="summary-item">
-                <span>Tax</span>
-                <span>₹80.00</span>
+                <span>Hostel Fee</span>
+                <span>₹8000.00</span>
             </div>
             <div class="summary-item total">
                 <span>Total</span>
-                <span>₹1130.00</span 
+                <span>₹113000.00</span 
                 >
             </div>
-            <button id="placeOrderBtn" type="button" class="submit-btn">Place Your Order</button>
+            <button id="placeOrderBtn" type="button" class="submit-btn">Finish Payment</button>
         </div>
     </div>
     <!-- /CONTENT -->
