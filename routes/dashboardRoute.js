@@ -100,4 +100,8 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
 	}
 });
 
+router.get("/payment-portal", thisGuy.hasAccess, (req, res) => {
+	res.render("payment-portal");
+});
+
 module.exports = router;

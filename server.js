@@ -82,6 +82,11 @@ async function createAssignments() {
 	return await storage.createAssignments();
 }
 
+app.get("/payment-portal", (req, res) => {
+	console.log("Payment portal accessed");
+	res.render("payment-portal");
+});	
+
 app.listen(port, async () => {
 	const creations = await Promise.all([
 		firstUsers(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD),
