@@ -2,7 +2,6 @@
 
 This **School Management System** is a comprehensive platform designed to streamline and manage school operations efficiently. The system includes features for administrators, teachers, students, and parents, providing a unified solution for school management.  
 
-🔗 **Live Demo:** [Check it out here](https://schoolmanagement.photosoko.com/)  
 
 ## Features
 
@@ -65,29 +64,3 @@ This **School Management System** is a comprehensive platform designed to stream
    ```bash
    npm start
    ```
-
-## Screenshots
-
-### Admin Dashboard
-
-![Admin Dashboard Screenshot](Screenshots/Admin%20Dashboard.png)
-
-### Teacher Portal
-
-![Teacher Portal Screenshot](Screenshots/Lecturer%20Dashboard.png)
-
-### Student Portal
-
-![Student Portal Screenshot](Screenshots/Student%20Dashboard.png)
-
-### Login
-
-![Login Portal Screenshot](Screenshots/Login.png)
-
-## Contributions
-
-Contributions are welcome! Please fork the repository and submit a pull request.
-
-## License
-
-[MIT License](LICENSE)
