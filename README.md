@@ -49,11 +49,11 @@ This **School Management System** is a comprehensive platform designed to stream
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/ElvisKemoi/Wester-Technical-College.git
+   https://github.com/yashwanth04112005/new_eduAxis
    ```
 2. Navigate to the project directory:
    ```bash
-   cd Wester-Technical-College
+   cd new_eduAxis
    ```
 3. Install dependencies:
    ```bash
