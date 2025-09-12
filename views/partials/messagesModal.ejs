@@ -27,7 +27,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
-					<% user.messages.forEach(message=>{ %>
+					<% user.messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(message=>{ %>
 					<div class="nature-card">
 						<div class="uk-card uk-card-small uk-card-default">
 							<div class="uk-card-header">

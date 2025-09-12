@@ -1,11 +1,12 @@
 const router = require("express").Router();
 const flash = require("connect-flash");
 const deferment = require("../controllers/defermentController");
+const { hasAccess } = require("../middleware/authentications");
 
 router.use(flash());
 
 router
-	.post("/save", async (req, res) => {
+	.post("/save", hasAccess, async (req, res) => {
 		const { reason } = req.body;
 		const savedDefermentRequest = await deferment.save(
 			req.user.username,
