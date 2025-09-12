@@ -359,7 +359,7 @@
 								data-uk-icon="icon:users"
 								class="uk-margin-small-right uk-text-primary"
 							></span
-							>Deferment Requests</span
+							>Leave Requests</span
 						>
 						<h1 class="uk-heading-primary uk-margin-remove uk-text-primary">
 							<%= pendingRequests%>
@@ -369,7 +369,7 @@
 							</span
 							>
 							<a data-bs-toggle="modal"
-							data-bs-target="#defermentListModal">View Deferment Requests</a>
+							data-bs-target="#defermentListModal">View Leave Requests</a>
 						</div>
 					</div>
 				</div>
@@ -616,7 +616,7 @@
 										><%= pendingRequests %></span
 									>
 									
-									Deferment Requests
+									Leave Requests
 								</h5>
 								<button
 									type="button"
@@ -701,7 +701,7 @@
 																		<ul class="uk-nav uk-dropdown-nav">
 																			<li class="uk-nav-header text-center">Actions</li>
 																			<% if (!teacher.approved) { %>
-																				<li><a href="/deferment/approve/<%= teacher._id %>"><span data-uk-icon="icon: check; ratio: 0.9"></span> Approve Deferment</a></li>
+																				<li><a href="/deferment/approve/<%= teacher._id %>"><span data-uk-icon="icon: check; ratio: 0.9"></span> Approve Leave</a></li>
 																			<% }else{ %>
 																			<li>
 																				<a href="#" class="uk-text-danger">
