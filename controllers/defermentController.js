@@ -14,7 +14,7 @@ const deferment = {
 			if (!savedDeferment.error) {
 				const savedMessage = await messages.save(
 					Student,
-					"Deferment Request Sent Successfully. Please wait for confirmation.",
+					"Leave Request Sent Successfully. Please wait for confirmation.",
 					studentId
 				);
 				return true;
@@ -37,7 +37,7 @@ const deferment = {
 			);
 			const savedMessage = await messages.save(
 				Student,
-				"Deferment Request Approved!",
+				"Leave Request Approved!",
 				theDeferment.studentNumber
 			);
 			return true;
@@ -61,7 +61,7 @@ const deferment = {
 			if (!deletedDefermentRequest.error) {
 				return true;
 			} else {
-				throw new Error("Failed To Delete Deferment Request!");
+				throw new Error("Failed To Delete Leave Request!");
 			}
 		} catch (error) {
 			return { error: error.message };
