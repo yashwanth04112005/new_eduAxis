@@ -11,6 +11,7 @@
 // 2.1. Enable students to submit assignments before the deadline. *
 // 2.5. Implement assignment upload functionality after doing it. *
 // 2.7. Restrict students from accessing assignments after the deadline. *
+// 2.8  Add the list of previous leave requests. *
 
 // TODO 3. Admin
 //? 3.1. Delete all files related to a teacher when their account is deleted. *
