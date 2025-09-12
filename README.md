@@ -11,8 +11,8 @@ This **School Management System** is a comprehensive platform designed to stream
 - Generate reports and analytics for school performance.  
 
 **Test Credentials:**  
-- **Username:** `Admin Test`  
-- **Password:** `111111`  
+- **Username:** `admin`  
+- **Password:** `adminpassword`  
 
 ## 📚 Teacher Portal  
 - Manage class rosters and attendance.  
@@ -20,8 +20,8 @@ This **School Management System** is a comprehensive platform designed to stream
 - View detailed performance reports for each student.  
 
 **Test Credentials:**  
-- **Username:** `Lecturer Test`  
-- **Password:** `111111`  
+- **Username:** `teacher`  
+- **Password:** `teacherpassword`  
 
 ## 🎓 Student Portal  
 - View class schedules and upcoming events.  
@@ -29,8 +29,8 @@ This **School Management System** is a comprehensive platform designed to stream
 - Communicate with teachers.  
 
 **Test Credentials:**  
-- **Username:** `Student Test`  
-- **Password:** `111111`  
+- **Username:** `student`  
+- **Password:** `studentpassword`  
 
 
 ### 📊 Reports & Analytics
