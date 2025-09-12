@@ -1,0 +1,29 @@
+<div class="uk-section uk-section-muted">
+  <div class="uk-container">
+    <h3 class="uk-text-bold">My Fee Receipts</h3>
+    <% if (receipts.length === 0) { %>
+      <p>No receipts submitted yet.</p>
+    <% } else { %>
+      <table class="uk-table uk-table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Receipt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% receipts.forEach(receipt => { %>
+            <tr>
+              <td><%= new Date(receipt.submittedAt).toLocaleDateString() %></td>
+              <td><%= receipt.amount %></td>
+              <td>
+                <a href="/<%= receipt.receiptFile.replace('\\', '/') %>" target="_blank">View</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>

@@ -136,4 +136,15 @@ router
 		}
 	});
 
+// View own fee receipts
+const FeeReceipt = require("../models/feeReceiptModel");
+router.get("/students/receipts", thisGuy.hasAccess, async (req, res) => {
+	try {
+		const receipts = await FeeReceipt.find({ student: req.user._id });
+		res.render("partials/studentReceipts", { receipts });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+});
+
 module.exports = router;

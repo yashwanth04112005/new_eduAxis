@@ -212,9 +212,12 @@
 									>Payment Portal</a
 								>
 							</li>
-							<!-- <li>
-								<a title="Album" href="album.html">Fee Balance</a>
-							</li> -->
+							<li>
+								<a title="Submit Fee Receipt" href="#" data-bs-toggle="modal" data-bs-target="#feeReceiptModal">Submit Fee Receipt</a>
+							</li>
+							<li>
+								<a title="View My Receipts" href="/students/receipts">View My Receipts</a>
+							</li>
 						</ul>
 					</li>
 					<li class="uk-parent">
@@ -317,12 +320,38 @@
 		</aside>
 		<!-- /LEFT BAR -->
 
-		<!-- MODALS -->
+				<!-- MODALS -->
 
-		<!-- Change Password Modal -->
+				<!-- Fee Receipt Submission Modal -->
+				<div class="modal fade" id="feeReceiptModal" tabindex="-1" role="dialog" aria-labelledby="feeReceiptModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<form action="/fees/submit-receipt" method="post" enctype="multipart/form-data">
+								<div class="modal-header">
+									<h5 class="modal-title" id="feeReceiptModalLabel">Submit Fee Receipt</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<div class="mb-3">
+										<label for="feeReceiptFile" class="form-label">Receipt File</label>
+										<input type="file" class="form-control" id="feeReceiptFile" name="feeReceipt" required accept="application/pdf,image/*" />
+									</div>
+									<div class="mb-3">
+										<label for="feeAmount" class="form-label">Amount</label>
+										<input type="number" class="form-control" id="feeAmount" name="amount" required min="1" />
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									<button type="submit" class="btn btn-primary">Submit Receipt</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 
-		<%- include("./partials/changePasswordModal.ejs", {theUserType: "students"})
-		%>
+				<!-- Change Password Modal -->
+				<%- include("./partials/changePasswordModal.ejs", {theUserType: "students"}) %>
 
 		<!-- Add Unit Modal -->
 		<div

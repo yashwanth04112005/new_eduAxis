@@ -34,8 +34,9 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
 			feesStructures: feesStructures,
 			messages: req.flash("info"),
 		};
+		const FeeReceipt = require("../models/feeReceiptModel");
 		const fetchAdminData = async () => {
-			const [numbers, classes, allTeachers, user, allStudents, deferments] =
+			const [numbers, classes, allTeachers, user, allStudents, deferments, totalReceiptsAmount] =
 				await Promise.all([
 					Numbers(),
 					Class.find().sort({ className: 1 }),
@@ -43,8 +44,14 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
 					Admin.findById(userId),
 					Student.find(),
 					deferment.list(),
+					fees.getTotalReceiptsAmount(),
 				]);
-			return { numbers, classes, allTeachers, user, allStudents, deferments };
+			// Fetch receipts for each student
+			const studentReceipts = {};
+			for (const student of allStudents) {
+				studentReceipts[student._id] = await FeeReceipt.find({ student: student._id });
+			}
+			return { numbers, classes, allTeachers, user, allStudents, deferments, totalReceiptsAmount, studentReceipts };
 		};
 		await countMembers();
 		const fetchStudentData = async () => {

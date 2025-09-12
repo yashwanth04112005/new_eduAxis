@@ -27,6 +27,37 @@ router
 				.json({ message: "Error uploading file", error: error.message });
 		}
 	})
+
+	// Submit fee receipt (student)
+	.post("/submit-receipt", fees.uploadReceipt.single("feeReceipt"), async (req, res) => {
+		try {
+			const { file } = req;
+			const { amount } = req.body;
+			const studentId = req.user._id;
+			if (!file || !amount) {
+				return res.status(400).json({ error: "Receipt file and amount required" });
+			}
+			const savedReceipt = await fees.saveReceipt(studentId, file.path, Number(amount));
+			if (!savedReceipt.error) {
+				req.flash("info", "Fee Receipt Submitted Successfully!");
+			} else {
+				req.flash("info", savedReceipt.error);
+			}
+			res.redirect("/dashboard");
+		} catch (error) {
+			res.status(500).json({ message: "Error submitting receipt", error: error.message });
+		}
+	})
+
+	// Get total receipts amount (admin)
+	.get("/total-receipts-amount", async (req, res) => {
+		try {
+			const total = await fees.getTotalReceiptsAmount();
+			res.json({ total });
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	})
 	.get("/delete/:id", async (req, res) => {
 		const { id } = req.params;
 		const deletedStructure = await fees.delete(id);
