@@ -13,7 +13,7 @@ router
 			reason
 		);
 		if (!savedDefermentRequest.error) {
-			req.flash("info", "Deferment Request Sent Successfully!");
+			req.flash("info", "Leave Request Sent Successfully!");
 		} else {
 			req.flash("info", savedDefermentRequest.error);
 		}
@@ -23,7 +23,7 @@ router
 		const { id } = req.params;
 		const deletedDefermentRequest = await deferment.delete(id);
 		if (!deletedDefermentRequest.error) {
-			req.flash("info", "Deferment Request Deleted Successfully!");
+			req.flash("info", "Leave Request Deleted Successfully!");
 		} else {
 			req.flash("info", deletedDefermentRequest.error);
 		}
@@ -33,7 +33,7 @@ router
 		const { id } = req.params;
 		const approvedRequest = await deferment.approve(id);
 		if (!approvedRequest.error) {
-			req.flash("info", "Deferment Request Updated Successfully!");
+			req.flash("info", "Leave Request Updated Successfully!");
 		} else {
 			req.flash("info", approvedRequest.error);
 		}
