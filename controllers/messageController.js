@@ -5,7 +5,7 @@ const message = {
 				studentId,
 				{
 					$push: {
-						messages: { title: theTitle, read: false, createdAt: new Date() }, // added createdAt
+						messages: { title: theTitle, read: false },
 					},
 				},
 				{ new: true } // This option returns the updated document
@@ -15,19 +15,6 @@ const message = {
 			} else {
 				throw new Error("Message Not Saved!");
 			}
-		} catch (error) {
-			return { error: error.message };
-		}
-	},
-	// new: return all messages newest first
-	getMessages: async (User, studentId) => {
-		try {
-			const user = await User.findById(studentId).lean();
-			if (!user) return { error: "User not found" };
-			const msgs = Array.isArray(user.messages) ? user.messages : [];
-			// sort descending by createdAt (newest first)
-			msgs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-			return msgs;
 		} catch (error) {
 			return { error: error.message };
 		}
