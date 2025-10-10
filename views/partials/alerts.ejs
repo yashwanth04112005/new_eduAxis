@@ -1,5 +1,5 @@
 <% for( let index = 0; index < messages.length; index++ ) { %>
-<div class="alert alert-primary alert-dismissible fade show" role="alert">
+<div class="alert alert-primary alert-dismissible fade show" role="alert" id="alert-<%= index %>">
 	<button
 		type="button"
 		class="btn-close"
@@ -10,3 +10,16 @@
 </div>
 
 <% } %>
+
+<script>
+	// Auto-dismiss flash messages after 1.5 seconds
+	document.addEventListener('DOMContentLoaded', function() {
+		const alerts = document.querySelectorAll('.alert-dismissible');
+		alerts.forEach(function(alert) {
+			setTimeout(function() {
+				const bsAlert = new bootstrap.Alert(alert);
+				bsAlert.close();
+			}, 1500);
+		});
+	});
+</script>

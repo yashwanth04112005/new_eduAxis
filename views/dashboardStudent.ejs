@@ -676,9 +676,31 @@
 						></button>
 					</div>
 					<div class="modal-body">
-						// TODO ADD THE LIST OF LEAVE REQUESTS
 						<div class="container-fluid">
-							LIST OF LEAVE REQUESTS GOES HERE
+							<% if (studentDeferments && studentDeferments.length > 0) { %>
+								<div class="list-group">
+									<% studentDeferments.forEach(function(deferment) { %>
+										<div class="list-group-item mb-2">
+											<div class="d-flex w-100 justify-content-between">
+												<h6 class="mb-1">
+													<% if (deferment.approved) { %>
+														<span class="badge bg-success">Approved</span>
+													<% } else { %>
+														<span class="badge bg-warning text-dark">Pending</span>
+													<% } %>
+												</h6>
+												<small class="text-muted"><%= formatDate(deferment.createdAt) %></small>
+											</div>
+											<p class="mb-1"><strong>Reason:</strong> <%= deferment.reason %></p>
+											<small class="text-muted">Submitted by: You</small>
+										</div>
+									<% }); %>
+								</div>
+							<% } else { %>
+								<div class="alert alert-info" role="alert">
+									<p class="mb-0">You have no leave requests yet.</p>
+								</div>
+							<% } %>
 						</div>
 					</div>
 					<div class="modal-footer">
@@ -689,7 +711,6 @@
 						>
 							Close
 						</button>
-						<button type="button" class="btn btn-primary">Save</button>
 					</div>
 				</div>
 			</div>

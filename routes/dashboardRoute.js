@@ -54,12 +54,17 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
 			});
 			user = await Student.findById(userId);
 			const unitData = await unit.getUnitData(user.myUnits);
+			const Deferment = require("../models/defermentModel");
+			const studentDeferments = await Deferment.find({
+				studentNumber: userId
+			}).sort({ createdAt: -1 });
 			return {
 				studentClass: studentClass.class,
 				classAssignments: classAssignments,
 				classes: classes,
 				user: user,
 				unitData: unitData,
+				studentDeferments: studentDeferments,
 			};
 		};
 		const fetchTeacherData = async () => {
