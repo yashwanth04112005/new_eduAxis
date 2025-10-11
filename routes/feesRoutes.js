@@ -2,7 +2,6 @@ const router = require("express").Router();
 const flash = require("connect-flash");
 const fees = require("../controllers/feesController");
 const path = require("path");
-// MIDDLEWARES
 
 router.use(flash());
 
@@ -54,5 +53,31 @@ router
 			console.error("Error fetching assignment", err);
 			res.status(500).json({ error: "Server error" });
 		}
+	})
+    // --- NEW ROUTE TO RECORD PAYMENT ---
+	.post("/record-payment", async (req, res) => {
+		try {
+			const student = req.user; // Assumes user info is attached by middleware
+			const { amount, paymentFor } = req.body;
+
+			if (!student || !amount || !paymentFor) {
+				return res.status(400).json({ message: "Missing payment details" });
+			}
+
+			const paymentRecord = await fees.recordPayment(student, amount, paymentFor);
+
+			if (!paymentRecord.error) {
+				res.status(200).json({ message: "Payment recorded successfully" });
+			} else {
+				res
+					.status(500)
+					.json({ message: "Failed to record payment", error: paymentRecord.error });
+			}
+		} catch (error) {
+			res
+				.status(500)
+				.json({ message: "Server error", error: error.message });
+		}
 	});
+
 module.exports = router;
