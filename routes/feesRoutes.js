@@ -49,7 +49,6 @@ router
 		}
 	})
 
-	// Get total receipts amount (admin)
 	.get("/total-receipts-amount", async (req, res) => {
 		try {
 			const total = await fees.getTotalReceiptsAmount();

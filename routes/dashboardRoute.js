@@ -46,7 +46,6 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
 					deferment.list(),
 					fees.getTotalReceiptsAmount(),
 				]);
-			// Fetch receipts for each student
 			const studentReceipts = {};
 			for (const student of allStudents) {
 				studentReceipts[student._id] = await FeeReceipt.find({ student: student._id });

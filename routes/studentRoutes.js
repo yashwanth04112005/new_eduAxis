@@ -62,11 +62,8 @@ router
 		try {
 			const result = await student.unenrollUnit(req.user._id, unitId);
 			if (result.error) {
-				// Send JSON error response with status code 400
 				return res.status(400).json({ success: false, error: result.error });
 			}
-
-			// Send JSON success response
 			return res
 				.status(200)
 				.json({ success: true, message: "Unit removed successfully." });
@@ -129,14 +126,12 @@ router
 				await theStudent.save();
 				req.flash("info", "Password Changed Successfully!");
 				res.status(200).redirect("/login");
-				// res.status(200).json({ message: "Password updated successfully" });
 			});
 		} catch (err) {
 			res.status(500).json({ error: err.message });
 		}
 	});
 
-// View own fee receipts
 const FeeReceipt = require("../models/feeReceiptModel");
 router.get("/students/receipts", thisGuy.hasAccess, async (req, res) => {
 	try {

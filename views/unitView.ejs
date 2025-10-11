@@ -459,11 +459,7 @@
 					.then((data) => {
 						if (data.success) {
 							window.location.href = "/dashboard";
-							// alert("Unit unenrolled successfully.");
-							// // Optionally, remove the unit from the DOM after successful unenrollment
-							// document
-							// 	.querySelector(`#unit-${unitId}`)
-							// 	.remove();
+
 						} else {
 							alert("Error: " + data.error);
 						}
