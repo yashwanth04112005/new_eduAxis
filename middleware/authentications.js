@@ -9,7 +9,7 @@ const thisGuy = {
 		if (req.isAuthenticated()) {
 			next();
 		} else {
-			req.flash("info", "Session Expired! Please Login");
+			req.flash("error", "Please log in to access this page");
 			res.redirect("/login");
 		}
 	},
@@ -17,16 +17,16 @@ const thisGuy = {
 		if (req.session.passport.user.type === "Admin") {
 			next();
 		} else {
-			req.flash("info", "Action Prohibited! Login As Admin To Continue.");
-			res.redirect("/login");
+			req.flash("error", "Access denied. Administrator privileges required.");
+			res.redirect("/dashboard");
 		}
 	},
 	isTeacher: async (req, res, next) => {
 		if (req.session.passport.user.type === "Teacher") {
 			next();
 		} else {
-			req.flash("info", "Action Prohibited! Login As Admin To Continue.");
-			res.redirect("/login");
+			req.flash("error", "Access denied. Teacher privileges required.");
+			res.redirect("/dashboard");
 		}
 	},
 	register: async (req, res, next) => {
@@ -72,7 +72,8 @@ const thisGuy = {
 		} else if (userType === "Student") {
 			UserModel = Student;
 		} else {
-			return res.status(400).send("Invalid user type");
+			req.flash("error", "Invalid user type selected");
+			return res.redirect("/login");
 		}
 		const user = new UserModel({
 			username: req.body.username,
@@ -82,16 +83,16 @@ const thisGuy = {
 		req.login(user, (err) => {
 			if (err) {
 				console.log(err);
-				req.flash("info", err.message);
+				req.flash("error", "Login failed: " + err.message);
 				res.redirect("/login");
 			} else {
-				passport.authenticate(`${userType.toLowerCase()}-local`)(
-					req,
-					res,
-					() => {
-						res.redirect("/dashboard");
-					}
-				);
+				passport.authenticate(`${userType.toLowerCase()}-local`, {
+					failureRedirect: '/login',
+					failureFlash: 'Invalid username or password'
+				})(req, res, () => {
+					req.flash("success", "Welcome back, " + user.username + "!");
+					res.render('login', { messages: req.flash() });
+				});
 			}
 		});
 	},
