@@ -118,6 +118,9 @@
 						EduAxis
 					</a>
 				</div>
+
+				<hr />
+			 
 				<!-- <img class="custom-logo" src="img/dashboard-logo.svg" alt="" /> -->
 			</div>
 			<div class="left-content-box content-box-dark">
@@ -143,6 +146,63 @@
 							<li>
 								<a class="uk-button" href="#modal-center" data-uk-toggle>
 									<span
+
+					<!-- New Assignment Modal -->
+					<div class="modal fade" id="addAssignmentModal" tabindex="-1" role="dialog" aria-labelledby="addAssignmentTitle" aria-hidden="true">
+					  <div class="modal-dialog" role="document">
+						<div class="modal-content assignment-upload-modal">
+						  <form action="/upload" enctype="multipart/form-data" method="post" id="uploadForm">
+							<div class="modal-header">
+							  <h5 class="modal-title" id="addAssignmentTitle">Upload Assignment</h5>
+							  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+							  <div class="container-fluid">
+								<div class="mb-3">
+								  <label for="unitSelect" class="form-label">Select Unit</label>
+								  <select class="form-select" id="unitSelect">
+									<option value="" selected disabled>Choose a unit</option>
+									<% myUnitsData.forEach(u => { %>
+									  <option value="<%= u._id %>"><%= u.unitName %> (<%= u.unitCode %>)</option>
+									<% }) %>
+								  </select>
+								  <input type="hidden" name="unitId" id="unitIdInput" />
+								</div>
+
+								<div class="mb-3">
+								  <label for="fileInput" class="form-label">Choose a File</label>
+								  <input class="form-control" type="file" id="fileInput" name="file" accept=".txt,.pdf,.doc,.docx" required />
+								  <div class="form-text">Accepted: .txt, .pdf, .doc, .docx</div>
+								</div>
+
+								<div class="mb-3">
+								  <label for="subject" class="form-label">Subject/Topic/Subtopic</label>
+								  <input type="text" name="subject" class="form-control" id="subject" placeholder="Subject" required />
+								</div>
+
+								<div class="mb-3">
+								  <label for="instructions" class="form-label">Details/Instructions</label>
+								  <textarea class="form-control" id="instructions" rows="3" name="Instructions" required></textarea>
+								</div>
+
+								<div class="mb-3">
+								  <label for="deadlineDate" class="form-label">Set Deadline Date</label>
+								  <input type="date" name="deadlineDate" id="deadlineDate" class="form-control" />
+								</div>
+								<div class="mb-3">
+								  <label for="deadlineTime" class="form-label">Set Deadline Time</label>
+								  <input type="time" class="form-control" name="deadlineTime" id="deadlineTime" />
+								</div>
+							  </div>
+							</div>
+							<div class="modal-footer">
+							  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							  <button type="button" onclick="uploadFile()" class="btn btn-primary">Save</button>
+							</div>
+						  </form>
+						</div>
+					  </div>
+					</div>
 										data-uk-icon="icon: settings"
 										class="uk-margin-small-right"
 									></span
@@ -935,6 +995,15 @@
 		<script src="../js/sweetAlert.js"></script>
 		<script src="js/chartScripts.js"></script>
 		<script src="js/teacher.js"></script>
+		<script src="/js/assignments.js"></script>
+		<script>
+		  document.addEventListener('change', function(e){
+		    if(e.target && e.target.id === 'unitSelect'){
+		      const hidden = document.getElementById('unitIdInput');
+		      if (hidden) hidden.value = e.target.value;
+		    }
+		  });
+		</script>
 		<!-- jQuery and Bootstrap JS -->
 	</body>
 </html>
