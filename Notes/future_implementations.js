@@ -4,3 +4,4 @@
 // add recent payments viewing in admin dashboard
 // add payment history for students
 // add an option for students to pay the amount
+// signout button in dashboard
