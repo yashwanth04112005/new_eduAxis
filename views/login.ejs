@@ -153,8 +153,23 @@
 							in</label
 						>
 					</div>
-					<% if (messages.length > 0) { %>
-					<div class="uk-text-danger"><%= messages %></div>
+					<% if (messages.error && messages.error.length > 0) { %>
+					<div class="uk-alert-danger" uk-alert>
+						<a class="uk-alert-close" uk-close></a>
+						<p><%= messages.error %></p>
+					</div>
+					<% } %>
+					<% if (messages.success && messages.success.length > 0) { %>
+					<div class="uk-alert-success" uk-alert>
+						<a class="uk-alert-close" uk-close></a>
+						<p><%= messages.success %></p>
+					</div>
+					<% } %>
+					<% if (messages.info && messages.info.length > 0) { %>
+					<div class="uk-alert-primary" uk-alert>
+						<a class="uk-alert-close" uk-close></a>
+						<p><%= messages.info %></p>
+					</div>
 					<% } %>
 					<div class="uk-margin-bottom">
 						<button
@@ -224,5 +239,13 @@
 		<script src="/js/uikit.min.js"></script>
 		<script src="/js/uikit-icons.min.js"></script>
 		<script src="js/login.js"></script>
+		<script src="js/flash-messages.js"></script>
+		<link rel="stylesheet" href="css/flash-messages.css">
+
+		<% if (messages.success && messages.success.length > 0) { %>
+		<script>
+			handleRedirect('/dashboard');
+		</script>
+		<% } %>
 	</body>
 </html>
