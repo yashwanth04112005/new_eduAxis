@@ -4,7 +4,7 @@ const passport = require("passport");
 
 const adminSchema = new mongoose.Schema(
 	{
-		username: {
+		username: {//email as user name
 			type: String,
 			required: true,
 			unique: true,
