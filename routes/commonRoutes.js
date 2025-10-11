@@ -165,11 +165,16 @@ router
 		}
 	})
 	.get("/logout", (req, res) => {
+		const username = req.user ? req.user.username : '';
+		req.flash("success", "Goodbye, " + username + "! You have been successfully logged out");
 		req.session.destroy((err) => {
 			if (err) {
 				console.log("Error destroying session:", err);
 			}
-			res.redirect("/");
+			res.render('login', { 
+				messages: req.flash(),
+				redirect: '/login'
+			});
 		});
 	})
 	.post("/register", thisGuy.register)
