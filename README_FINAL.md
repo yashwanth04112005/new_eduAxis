@@ -13,9 +13,35 @@ This **School Management System** is a comprehensive platform designed to stream
 
 ## Team Members & Roles
 
- - To be filled by yash
+ **Aditya: Backend Developer:**
+- User authentication
+- Database management
+- API endpoints
+- Server security
 
 
+**Yashwanth: Student Module Developer:**
+- Assignment submissions
+- Course enrollment
+- Progress tracking
+- Student profiles
+
+**Teacher: Teacher Module Developer:**
+- Teacher dashboard features
+- Assignment creation and grading
+- Unit and class management
+
+**Tharun: Admin Module Developer:**
+- System administration
+- User account management
+- Financial management
+- Leave request processing
+
+**Gowtham - Frontend Developer:**
+- Login/Register pages
+- Dashboards
+- Assignment interface
+- Responsive layouts
 -----
 
 ## Features
@@ -90,7 +116,7 @@ This **School Management System** is a comprehensive platform designed to stream
     ```
 
   ## Key Files and Functions
-  
+
 
   ## Demo link with time stamps
 
