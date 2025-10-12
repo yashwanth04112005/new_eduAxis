@@ -21,19 +21,19 @@
 - Student dashboard functionality
 - Files: `studentController.js`, assignment handling, unit management
 
-## 4. Teacher/Admin Module Developer
+## 4. Teacher Module Developer
 - Develops teacher dashboard
-- Implements admin controls
-- Handles user management
-- Manages fees and leave requests
-- Files: `adminController.js`, `teacherController.js`, administrative features
+- Manages assignment creation and grading
+- Handles unit/class creation and management
+- Implements teacher messaging system
+- Files: `teacherController.js`, `unitController.js`, teacher dashboard features
 
-## 5. Testing & Documentation
-- Writes system documentation
-- Performs system testing
-- Handles bug fixes
-- Manages deployment
-- Files: Documentation, test cases, deployment scripts
+## 5. Admin Module Developer
+- Implements admin dashboard
+- Handles user management (students/teachers)
+- Manages fees structure and payments
+- Handles leave request system
+- Files: `adminController.js`, `feesController.js`, `defermentController.js`
 
 ## Key Features by Role
 
@@ -55,14 +55,14 @@
 - Progress tracking
 - Student profiles
 
-**Teacher/Admin Developer:**
-- User management
-- Course creation
-- Grade management
-- Administrative controls
+**Teacher Module Developer:**
+- Teacher dashboard features
+- Assignment creation and grading
+- Unit and class management
+- Teacher-student communication
 
-**Testing & Documentation:**
-- System testing
-- User guides
-- API documentation
-- Deployment guides
+**Admin Module Developer:**
+- System administration
+- User account management
+- Financial management
+- Leave request processing
