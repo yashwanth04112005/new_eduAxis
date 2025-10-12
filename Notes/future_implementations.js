@@ -4,4 +4,11 @@
 // add recent payments viewing in admin dashboard
 // add payment history for students
 // add an option for students to pay the amount
+<<<<<<< HEAD
  
+=======
+// signout button in dashboard
+//teacher deleting assignments
+// reject leave in admin
+// view assignment submissions in teacher dashboard
+>>>>>>> 2b36851ab9fbf3428b78c8022b22a8cb541ba492
