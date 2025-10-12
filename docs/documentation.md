@@ -134,6 +134,20 @@ The application follows a Model-View-Controller (MVC) architecture:
    }
    ```
 
+4. **Deferment Model** (Leave Request)
+   ```javascript
+   {
+     studentName: String,
+     studentNumber: String,
+     reason: String,
+     approved: Boolean,
+     timestamps: {
+       createdAt: Date,
+       updatedAt: Date
+     }
+   }
+   ```
+
 ## API Endpoints
 
 ### Authentication Routes
@@ -158,7 +172,13 @@ The application follows a Model-View-Controller (MVC) architecture:
 - `GET /assignments` - View assignments
 - `POST /assignments/submit` - Submit assignment
 - `GET /timetable` - View timetable
-- `POST /deferment/save` - Submit leave request
+
+### Leave Request Routes
+- `POST /deferment/save` - Submit new leave request
+- `GET /deferment/list` - View all leave requests (Admin only)
+- `POST /deferment/delete-all` - Delete all leave requests (Admin only)
+- `POST /deferment/approve/:id` - Approve a leave request (Admin only)
+- `POST /deferment/reject/:id` - Reject a leave request (Admin only)
 
 ## Authentication & Authorization
 
