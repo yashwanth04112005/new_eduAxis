@@ -123,12 +123,19 @@
 <body>
     <div id="content" class="checkout-container" data-uk-height-viewport="expand: true">
         <h1 class="uk-heading-medium uk-text-center uk-margin-medium-bottom">Payment Portal</h1>
+        <div id="flash-container" class="mb-3"></div>
 
         <div class="form-section">
+            <h2>Amount</h2>
+            <div class="form-group">
+                <label>Admin-set Amount</label>
+                <input type="text" id="amountInput" class="form-control" disabled>
+                <small class="text-muted" id="planTitle"></small>
+            </div>
             <h2>Payment Method</h2>
             <div class="payment-options">
                 <div class="payment-option" onclick="togglePaymentForm('card')">
-                    <input type="radio" name="payment" id="creditCard">
+                    <input type="radio" name="payment" id="creditCard" value="card">
                     <label for="creditCard">
                         <img src="https://logos-world.net/wp-content/uploads/2020/04/Visa-Logo.png" alt="Visa" class="bank-logo">
                         <img src="https://logos-world.net/wp-content/uploads/2020/07/Mastercard-Logo.png" alt="MasterCard" class="bank-logo">
@@ -159,7 +166,7 @@
                 </div>
 
                 <div class="payment-option" onclick="togglePaymentForm('upi')">
-                    <input type="radio" name="payment" id="upi">
+                    <input type="radio" name="payment" id="upi" value="upi">
                     <label for="upi">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/1200px-UPI-Logo-vector.svg.png" alt="UPI" class="bank-logo">
                         UPI
@@ -183,20 +190,12 @@
         <div class="order-summary">
             <h2>Fee Details</h2>
             <div class="summary-item">
-                <span>Tuition Fee</span>
-                <span>₹100000.00</span>
-            </div>
-            <div class="summary-item">
-                <span>Mess Fee</span>
-                <span>₹5000.00</span>
-            </div>
-            <div class="summary-item">
-                <span>Hostel Fee</span>
-                <span>₹8000.00</span>
+                <span>Plan</span>
+                <span id="summaryPlanTitle">—</span>
             </div>
             <div class="summary-item total">
                 <span>Total</span>
-                <span id="totalAmount">113000.00</span>
+                <span id="totalAmount">0.00</span>
             </div>
             <button id="placeOrderBtn" type="button" class="submit-btn w-100 mt-3">Finish Payment</button>
         </div>
@@ -208,26 +207,34 @@
         function togglePaymentForm(type) {
             const cardForm = document.getElementById('cardForm');
             const upiForm = document.getElementById('upiForm');
+            const cardRadio = document.getElementById('creditCard');
+            const upiRadio = document.getElementById('upi');
             if (type === 'card') {
                 cardForm.style.display = cardForm.style.display === 'block' ? 'none' : 'block';
                 upiForm.style.display = 'none';
+                cardRadio.checked = true;
+                upiRadio.checked = false;
             } else if (type === 'upi') {
                 upiForm.style.display = upiForm.style.display === 'block' ? 'none' : 'block';
                 cardForm.style.display = 'none';
+                upiRadio.checked = true;
+                cardRadio.checked = false;
             } else {
                 cardForm.style.display = 'none';
                 upiForm.style.display = 'none';
+                cardRadio.checked = false;
+                upiRadio.checked = false;
             }
         }
 
         function saveCardDetails(event) {
             event.preventDefault();
-            alert('Card details saved!');
+            showFlash('success', 'Card details saved!');
         }
 
         function saveUpiDetails(event) {
             event.preventDefault();
-            alert('UPI details saved!');
+            showFlash('success', 'UPI details saved!');
         }
 
         // --- MODIFIED SCRIPT ---
@@ -236,8 +243,19 @@
             button.disabled = true;
             button.textContent = 'Processing...';
 
-            const amount = parseFloat(document.getElementById('totalAmount').textContent);
-            const paymentFor = "Total Semester Fees";
+            // Amount is enforced by admin-set plan on the server
+            const manualAmountInput = document.getElementById('amountInput');
+            const amount = parseFloat((manualAmountInput.value || '0').replace(/[,\s]/g, ''));
+            const paymentFor = window.currentPlanTitle || "Fees Plan";
+            const selected = document.querySelector('input[name="payment"]:checked');
+            const paymentMethod = selected ? selected.value : null;
+
+            if (!paymentMethod) {
+                showFlash('warning', 'Please select a payment method (Card or UPI).');
+                button.disabled = false;
+                button.textContent = 'Finish Payment';
+                return;
+            }
 
             try {
                 const response = await fetch('/fees/record-payment', { // Corrected endpoint
@@ -245,25 +263,73 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ amount, paymentFor }),
+                    body: JSON.stringify({ amount, paymentFor, paymentMethod }),
                 });
 
                 if (response.ok) {
-                    alert('Payment successful and recorded!');
-                    window.location.href = '/dashboard';
+                    showFlash('success', 'Payment successful and recorded! Redirecting...');
+                    setTimeout(() => { window.location.href = '/dashboard'; }, 1200);
                 } else {
                     const errorData = await response.json();
-                    alert(`Payment failed: ${errorData.message}`);
+                    showFlash('danger', `Payment failed: ${errorData.message}`);
                     button.disabled = false;
                     button.textContent = 'Finish Payment';
                 }
             } catch (error) {
                 console.error('Error processing payment:', error);
-                alert('An error occurred. Please try again.');
+                showFlash('danger', 'An error occurred. Please try again.');
                 button.disabled = false;
                 button.textContent = 'Finish Payment';
             }
         });
+
+        function showFlash(type, message) {
+            const container = document.getElementById('flash-container');
+            if (!container) return;
+            const map = { success: 'alert-success', info: 'alert-primary', warning: 'alert-warning', danger: 'alert-danger', error: 'alert-danger' };
+            const cls = map[type] || 'alert-primary';
+            const div = document.createElement('div');
+            div.className = `alert ${cls} alert-dismissible fade show`;
+            div.setAttribute('role', 'alert');
+            div.innerHTML = `
+                <span>${message}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            container.appendChild(div);
+            setTimeout(() => {
+                try { bootstrap.Alert.getOrCreateInstance(div).close(); } catch (e) { div.remove(); }
+            }, 1500);
+        }
+
+        // Load current fee plan on page load and set amount
+        (async function(){
+            try {
+                const res = await fetch('/fees/current-plan');
+                const plan = await res.json();
+                const amtEl = document.getElementById('amountInput');
+                const titleEl = document.getElementById('planTitle');
+                const totalEl = document.getElementById('totalAmount');
+                const payBtn = document.getElementById('placeOrderBtn');
+                if (res.ok) {
+                    amtEl.value = Number(plan.amount).toLocaleString();
+                    titleEl.textContent = `Plan: ${plan.title}`;
+                    const planTitleEl = document.getElementById('summaryPlanTitle');
+                    if (planTitleEl) planTitleEl.textContent = plan.title;
+                    if (totalEl) totalEl.textContent = Number(plan.amount).toFixed(2);
+                    window.currentPlanTitle = plan.title;
+                    payBtn.disabled = false;
+                } else {
+                    amtEl.value = '';
+                    titleEl.textContent = 'No active fee plan set by admin';
+                    const planTitleEl = document.getElementById('summaryPlanTitle');
+                    if (planTitleEl) planTitleEl.textContent = '—';
+                    if (totalEl) totalEl.textContent = '0.00';
+                    payBtn.disabled = true;
+                }
+            } catch (e) {
+                console.error('Failed to load plan', e);
+            }
+        })();
     </script>
 </body>
 </html>

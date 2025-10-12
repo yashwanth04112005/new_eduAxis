@@ -170,7 +170,10 @@
 								<a title="Fees Structure" href="#feesStructure">Fees structure</a>
 							</li>
 							<li>
-								<a title="Recent Payments" href="#recentPayments">Recent Payments</a>
+									<a title="Recent Payments" href="#recentPayments">Recent Payments</a>
+							</li>
+							<li>
+								<a title="Set Fee Plan" href="/fees/plan">Set Fee Plan</a>
 							</li>
 						</ul>
 					</li>
@@ -635,6 +638,35 @@
 																</div>
 															</div>
 														</div>
+
+																			<!-- Fee Plan Modal -->
+																			<div class="modal fade" id="feePlanModal" tabindex="-1" aria-hidden="true">
+																				<div class="modal-dialog">
+																					<div class="modal-content">
+																						<form action="/fees/plan" method="post">
+																							<div class="modal-header">
+																								<h5 class="modal-title">Set Active Fee Plan</h5>
+																								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																							</div>
+																							<div class="modal-body">
+																									<div class="mb-3">
+																											<label class="form-label">Title</label>
+																											<input type="text" name="title" class="form-control" placeholder="e.g. Semester Fees 2025-10" required />
+																									</div>
+																									<div class="mb-3">
+																											<label class="form-label">Amount</label>
+																											<input type="number" name="amount" min="0" step="0.01" class="form-control" placeholder="e.g. 15000" required />
+																									</div>
+																									<small class="text-muted">Setting a new plan deactivates previous ones and enforces this amount for all payments.</small>
+																							</div>
+																							<div class="modal-footer">
+																								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																								<button type="submit" class="btn btn-primary">Save Plan</button>
+																							</div>
+																						</form>
+																					</div>
+																				</div>
+																			</div>
 													</div>
 												</div>
 											</div>
@@ -1098,6 +1130,122 @@
 				</div>
 				<%- include("./partials/timetableList.ejs")  %>
 			<%- include("./partials/feeStructureList.ejs")  %>
+
+				<!-- Recent Payments Panel -->
+				<div class="uk-width-1-1@l" id="recentPayments">
+					<div class="uk-card uk-card-default uk-card-small uk-card-hover">
+						<div class="uk-card-header">
+							<div class="uk-grid uk-grid-small">
+								<div class="uk-width-auto d-flex align-items-center gap-2">
+									<h4 class="mb-0">Recent Payments</h4>
+									<button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#feePlanModal">Set Fee Plan</button>
+								</div>
+								<div class="uk-width-expand uk-text-right panel-icons d-flex gap-2 align-items-center justify-content-end">
+									<div class="d-flex gap-2 align-items-center">
+										<input type="date" id="paymentsStart" class="form-control form-control-sm" />
+										<input type="date" id="paymentsEnd" class="form-control form-control-sm" />
+										<button id="paymentsFilterBtn" class="btn btn-sm btn-primary">Filter</button>
+										<a id="paymentsCsv" class="btn btn-sm btn-outline-secondary" href="/fees/payments.csv" target="_blank">Download CSV</a>
+									</div>
+									<a href="/dashboard" class="uk-icon-link uk-text-success btn btn-outline-primary" title="Refresh" data-uk-tooltip>
+										<span data-uk-icon="icon: refresh" class="uk-text-success"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="uk-card-body">
+							<% if (feePlan) { %>
+							<div class="alert alert-info d-flex justify-content-between align-items-center" role="alert">
+								<div>
+									<strong>Current Plan:</strong> <%= feePlan.title %> — ₹ <%= Number(feePlan.amount).toLocaleString() %>
+								</div>
+								<small class="text-muted">Updated: <%= formatDate(feePlan.updatedAt || feePlan.createdAt) %></small>
+							</div>
+							<% } else { %>
+							<div class="alert alert-warning" role="alert">
+								No active fee plan set. Students cannot pay until you set one. Click "Set Fee Plan" to create.
+							</div>
+							<% } %>
+							<div class="mb-2 d-flex gap-3" id="paymentsSummary">
+								<span class="badge bg-primary">Total: ₹ <span data-total-amount>0</span></span>
+								<span class="badge bg-secondary">Count: <span data-total-count>0</span></span>
+								<span class="badge bg-info text-dark">Students: <span data-unique-students>0</span></span>
+							</div>
+							<div class="table-responsive">
+								<table class="uk-table uk-table-divider uk-table-small">
+									<thead>
+										<tr>
+											<th>Student</th>
+											<th>For</th>
+											<th class="text-end">Amount</th>
+											<th>Method</th>
+											<th>Date</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% if (typeof payments !== 'undefined' && payments.length > 0) { %>
+											<% payments.slice(0, 10).forEach(p => { %>
+												<tr>
+													<td><%= p.studentName %></td>
+													<td><%= p.paymentFor %></td>
+													<td class="text-end">₹ <%= Number(p.amount).toLocaleString() %></td>
+													<td>
+														<% const m = (p.paymentMethod || 'other'); %>
+														<span class="badge <%= m==='card' ? 'bg-success' : (m==='upi' ? 'bg-warning text-dark' : 'bg-secondary') %>"><%= m.toUpperCase() %></span>
+													</td>
+													<td><%= formatDate(p.paymentDate) %></td>
+												</tr>
+											<% }) %>
+										<% } else { %>
+											<tr>
+												<td colspan="5" class="text-center text-muted">No payments recorded yet.</td>
+											</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<script>
+				(function(){
+					const start = document.getElementById('paymentsStart');
+					const end = document.getElementById('paymentsEnd');
+					const filterBtn = document.getElementById('paymentsFilterBtn');
+					const csvLink = document.getElementById('paymentsCsv');
+					const totalAmountEl = document.querySelector('[data-total-amount]');
+					const totalCountEl = document.querySelector('[data-total-count]');
+					const uniqueStudentsEl = document.querySelector('[data-unique-students]');
+
+					function updateCsvHref(){
+						const params = new URLSearchParams();
+						if (start.value) params.set('startDate', start.value);
+						if (end.value) params.set('endDate', end.value);
+						csvLink.href = '/fees/payments.csv' + (params.toString() ? ('?' + params.toString()) : '');
+					}
+
+					async function updateSummary(){
+						const params = new URLSearchParams();
+						if (start.value) params.set('startDate', start.value);
+						if (end.value) params.set('endDate', end.value);
+						const res = await fetch('/fees/payments/summary' + (params.toString() ? ('?' + params.toString()) : ''));
+						if (!res.ok) return;
+						const data = await res.json();
+						totalAmountEl.textContent = Number(data.totalAmount || 0).toLocaleString();
+						totalCountEl.textContent = data.count || 0;
+						uniqueStudentsEl.textContent = data.uniqueStudents || 0;
+						updateCsvHref();
+					}
+
+					filterBtn.addEventListener('click', function(){
+						updateSummary();
+					});
+
+					// Initialize on load
+					updateSummary();
+				})();
+				</script>
 			</div>
 				<%- include("./partials/footer.ejs") -%>
 				

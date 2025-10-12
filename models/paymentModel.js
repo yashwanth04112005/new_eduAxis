@@ -14,6 +14,11 @@ const paymentSchema = new mongoose.Schema({
 		type: Number,
 		required: true,
 	},
+	paymentMethod: {
+		type: String,
+		enum: ["card", "upi", "other"],
+		default: "other",
+	},
 	paymentFor: {
 		type: String,
 		default: "Semester Fees",
