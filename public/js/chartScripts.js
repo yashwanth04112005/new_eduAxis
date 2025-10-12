@@ -1,5 +1,4 @@
-// Chart 1
-// ========================================================================
+
 var char1El = document.getElementById("chart1");
 new Chart(char1El, {
 	type: "bar",
@@ -30,8 +29,7 @@ new Chart(char1El, {
 	},
 });
 
-// Chart 2
-// ========================================================================
+
 var char2El = document.getElementById("chart2");
 
 new Chart(char2El, {
@@ -84,8 +82,6 @@ new Chart(char2El, {
 	},
 });
 
-// Chart 3
-// ========================================================================
 var char3El = document.getElementById("chart3");
 
 new Chart(char3El, {
@@ -116,8 +112,7 @@ new Chart(char3El, {
 	},
 });
 
-// Chart 4
-// ========================================================================
+
 var char4El = document.getElementById("chart4");
 
 new Chart(char4El, {
@@ -160,8 +155,7 @@ new Chart(char4El, {
 	},
 });
 
-// Chart 5
-// ========================================================================
+
 var char5El = document.getElementById("chart5");
 
 new Chart(char5El, {

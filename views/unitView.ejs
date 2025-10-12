@@ -398,6 +398,13 @@
 		<%- include("./partials/studentOffcanvas.ejs") %>
 		<!-- /OFFCANVAS -->
 		<!-- MODALS -->
+        <%- include("./partials/submissionModal.ejs") %>
+        <% if (userType === "Teacher") { %>
+            <%- include("./partials/submissionsList.ejs") %>
+        <% } %>
+        
+        <!-- Include unit.js for submission functionality -->
+        <script src="/js/unit.js"></script>
 
 		<div id="modal-center1" class="uk-flex-top" data-uk-modal>
 			<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical card">

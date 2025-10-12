@@ -72,42 +72,49 @@
 						></a>
 					</div> -->
 					<div class="uk-width-auto uk-text-right">
-						<% if (type === "Teacher") { %>
-						<form
-							id="<%= assignment._id %>"
-							action="/assignments/delete/<%= assignment._id %>"
-							method="post"
-						>
-							<input
-								type="hidden"
-								name="filePath"
-								value="<%= assignment.filePath %>"
-							/>
-
-							<button
-								type="button"
-								class="uk-icon-link uk-text-danger"
-								title="Delete Assignment"
-								data-uk-tooltip
-								data-uk-icon="icon: trash"
-								onclick="confirmDelete('<%= assignment._id %>')"
-							></button>
-						</form>
-						<% }%>
-					
-					</div>
-					<div class="uk-width-auto uk-text-right">
-						<div class="uk-width-auto uk-text-right uk-text-primary"></div>
-							<a
-								data-uk-tooltip="title: Download Assignment"
-								href="/assignments/download/<%= assignment._id %>"
+						<div class="uk-button-group">
+							<!-- Download Assignment Button -->
+							<a href="/assignments/download/<%= assignment._id %>"
 								target="_blank"
-								class="uk-icon-link uk-text-primary"
-								data-uk-icon="icon:download; ratio: 1.5"
-							></a>
-						</div>
-						</div>
+								class="uk-button uk-button-small uk-button-secondary"
+								data-uk-tooltip="title: Download Assignment">
+								<span uk-icon="download"></span>
+							</a>
 
+							<% if (type === "Student") { %>
+								<!-- Submit Assignment Button -->
+								<button class="uk-button uk-button-small uk-button-primary" 
+										onclick="openSubmissionModal('<%= assignment._id %>')"
+										data-uk-tooltip="title: Submit Assignment">
+									<span uk-icon="upload"></span>
+								</button>
+							<% } %>
+
+							<% if (type === "Teacher") { %>
+								<!-- View Submissions Button -->
+								<button class="uk-button uk-button-small uk-button-primary"
+										onclick="viewSubmissions('<%= assignment._id %>')"
+										data-uk-tooltip="title: View Submissions">
+									<span uk-icon="list"></span>
+								</button>
+								<!-- Delete Assignment Button -->
+								<form id="<%= assignment._id %>"
+									action="/assignments/delete/<%= assignment._id %>"
+									method="post"
+									class="uk-display-inline">
+									<input type="hidden"
+										name="filePath"
+										value="<%= assignment.filePath %>" />
+									<button type="button"
+										class="uk-button uk-button-small uk-button-danger"
+										data-uk-tooltip="title: Delete Assignment"
+										onclick="confirmDelete('<%= assignment._id %>')">
+										<span uk-icon="trash"></span>
+									</button>
+								</form>
+							<% } %>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
