@@ -13,6 +13,14 @@ const thisGuy = {
 			res.redirect("/login");
 		}
 	},
+	isStudent: async (req, res, next) => {
+		if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.type === "Student") {
+			next();
+		} else {
+			if (req.session) req.flash("error", "Access denied. Student privileges required.");
+			res.redirect("/dashboard");
+		}
+	},
 	isAdmin: async (req, res, next) => {
 			if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.type === "Admin") {
 			next();
