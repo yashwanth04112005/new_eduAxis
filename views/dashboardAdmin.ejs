@@ -835,6 +835,17 @@
 																<ul class="uk-nav uk-dropdown-nav">
 																	<li class="uk-nav-header text-center">Actions</li>
 																	<li>
+																		<a href="#" data-bs-toggle="collapse" data-bs-target="#changeTeacherPwd-<%=teacher._id%>">
+																			<span data-uk-icon="icon: lifesaver; ratio: 0.9"></span> Change Password
+																		</a>
+																		<div id="changeTeacherPwd-<%=teacher._id%>" class="collapse mt-2">
+																			<form action="/teachers/<%=teacher._id%>/password" method="post" class="d-flex gap-2 align-items-center">
+																				<input type="password" class="form-control form-control-sm" name="password" placeholder="New password" required />
+																				<button type="submit" class="btn btn-sm btn-primary">Update</button>
+																			</form>
+																		</div>
+																	</li>
+																	<li>
 																		<a href="#" class="uk-text-danger">
 																			<span data-uk-icon="icon: trash; ratio: 0.9"></span>
 																			<form id="deletelec-<%=teacher._id%>" action="/teachers/delete/<%=teacher._id%>" method="post">
@@ -947,7 +958,17 @@
 														<div data-uk-dropdown="mode: click; pos:top-right">
 															<ul class="uk-nav uk-dropdown-nav">
 																<li class="uk-nav-header text-center">Actions</li>
-																<li><a href="#"><span data-uk-icon="icon: lifesaver; ratio: 0.9"></span> Change Password</a></li>
+																<li>
+																	<a href="#" data-bs-toggle="collapse" data-bs-target="#changeStudentPwd-<%=student._id%>">
+																		<span data-uk-icon="icon: lifesaver; ratio: 0.9"></span> Change Password
+																	</a>
+																	<div id="changeStudentPwd-<%=student._id%>" class="collapse mt-2">
+																		<form action="/students/<%=student._id%>/password" method="post" class="d-flex gap-2 align-items-center">
+																			<input type="password" class="form-control form-control-sm" name="password" placeholder="New password" required />
+																			<button type="submit" class="btn btn-sm btn-primary">Update</button>
+																		</form>
+																	</div>
+																</li>
 																<li>
 																	<a href="#" class="uk-text-danger">
 																		<span data-uk-icon="icon: trash; ratio: 0.9"></span>

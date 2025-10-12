@@ -115,20 +115,20 @@ router
 			res.redirect("/dashboard");
 		}
 	)
-	.post("/students/:id/password", thisGuy.hasAccess, async (req, res) => {
+	.post("/students/:id/password", thisGuy.hasAccess, thisGuy.isAdmin, async (req, res) => {
 		try {
 			const { password } = req.body;
 			const theStudent = await Student.findById(req.params.id);
 			if (!theStudent) {
 				return res.status(404).json({ error: "Student not found" });
 			}
-			theStudent.setPassword(password, async (err) => {
+				theStudent.setPassword(password, async (err) => {
 				if (err) {
 					return res.status(500).json({ error: err.message });
 				}
 				await theStudent.save();
 				req.flash("info", "Password Changed Successfully!");
-				res.status(200).redirect("/login");
+					res.status(200).redirect("/dashboard");
 				// res.status(200).json({ message: "Password updated successfully" });
 			});
 		} catch (err) {

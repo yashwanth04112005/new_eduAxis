@@ -42,7 +42,7 @@ router
 		}
 	)
 	// ? CHANGE PASSWORD
-	.post("/teachers/:id/password", thisGuy.hasAccess, async (req, res) => {
+	.post("/teachers/:id/password", thisGuy.hasAccess, thisGuy.isAdmin, async (req, res) => {
 		try {
 			const { password } = req.body;
 			const theTeacher = await Teacher.findById(req.params.id);
@@ -55,7 +55,7 @@ router
 				}
 				await theTeacher.save();
 				req.flash("info", "Password Changed Successfully!");
-				res.status(200).redirect("/login");
+				res.status(200).redirect("/dashboard");
 				// res.status(200).json({ message: "Password updated successfully" });
 			});
 		} catch (err) {
