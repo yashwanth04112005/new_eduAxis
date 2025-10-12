@@ -46,8 +46,11 @@ const unitRoutes = require("./routes/unitRoute");
 const timetableRouters = require("./routes/timetableRoutes");
 const feesStructureRouters = require("./routes/feesRoutes");
 const defermentRoutes = require("./routes/defermentRoute");
+const submissionRoutes = require("./routes/submissionRoutes");
+
 app.use("/", teachersRoutes);
 app.use("/", eventsRoutes);
+app.use("/", submissionRoutes);
 app.use("/", assignmentRoutes);
 app.use("/", classRoutes);
 app.use("/", studentRoutes);
