@@ -1,5 +1,4 @@
 function showFlash(type, message) {
-  // type: 'success' | 'info' | 'danger'
   const cls = type === 'success' ? 'alert-success' : type === 'danger' ? 'alert-danger' : 'alert-primary';
   const alert = document.createElement('div');
   alert.className = `alert ${cls} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
@@ -21,14 +20,12 @@ function showFlash(type, message) {
 }
 
 function handleLogout() {
-  // Show a flash-style banner on the dashboard, then redirect to /logout
   showFlash('success', 'Signing out…');
   setTimeout(() => {
     window.location.href = '/logout';
   }, 900);
 }
 
-// Attach to any logout links with data-logout
 (function attachLogoutHandlers() {
   document.addEventListener('click', function (e) {
     const a = e.target.closest('a[data-logout]');
