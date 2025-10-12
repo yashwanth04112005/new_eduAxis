@@ -1,17 +1,5 @@
 # EduAxis - School Management System Documentation
 
-## Table of Contents
-1. [Introduction](#introduction)
-2. [System Architecture](#system-architecture)
-3. [Technology Stack](#technology-stack)
-4. [Features](#features)
-5. [Database Models](#database-models)
-6. [API Endpoints](#api-endpoints)
-7. [Authentication & Authorization](#authentication--authorization)
-8. [File Management](#file-management)
-9. [Installation Guide](#installation-guide)
-10. [User Roles & Permissions](#user-roles--permissions)
-
 ## Introduction
 EduAxis is a comprehensive school management system designed to streamline educational institution operations. It provides separate portals for administrators, teachers, and students with role-specific functionalities.
 
