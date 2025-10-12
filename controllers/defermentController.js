@@ -67,5 +67,13 @@ const deferment = {
 			return { error: error.message };
 		}
 	},
+	deleteAll: async () => {
+		try {
+			await Deferment.deleteMany({});
+			return true;
+		} catch (error) {
+			return { error: error.message };
+		}
+	},
 };
 module.exports = deferment;

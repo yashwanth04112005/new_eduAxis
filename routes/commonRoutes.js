@@ -63,7 +63,7 @@ router
 					AsClass: studentClass.class,
 				});
 				user = await Student.findById(userId);
-				const assignments = await Assignment.find({ unit: unitId }, {});
+				const assignments = await Assignment.find({ unit: unitId }, {}).sort({ createdAt: -1 });
 				return {
 					studentClass: studentClass.class,
 					classAssignments: classAssignments,
@@ -75,7 +75,7 @@ router
 				const teacherAssignments = await Assignment.find(
 					{ createdBy: req.user.username, unit: unitId },
 					{}
-				);
+				).sort({ createdAt: -1 });
 				user = await Teacher.findById(userId);
 				return {
 					assignments: teacherAssignments,

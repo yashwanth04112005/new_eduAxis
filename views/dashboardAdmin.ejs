@@ -643,6 +643,17 @@
 								</div>
 							</div>
 							<div class="modal-footer">
+								<form id="deleteAllDeferments" action="/deferment/delete-all" method="post" class="me-auto">
+									<button
+										type="button"
+										class="btn btn-danger"
+										title="Delete all leave requests"
+										data-uk-tooltip
+										onclick="confirmClassDelete('deleteAllDeferments')"
+									>
+										Delete All
+									</button>
+								</form>
 								<button
 									type="button"
 									class="btn btn-secondary"

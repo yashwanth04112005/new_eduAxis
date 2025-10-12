@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const flash = require("connect-flash");
 const deferment = require("../controllers/defermentController");
-const { hasAccess } = require("../middleware/authentications");
+const { hasAccess, isAdmin } = require("../middleware/authentications");
 
 router.use(flash());
 
@@ -17,6 +17,15 @@ router
 			req.flash("info", "Leave Request Sent Successfully!");
 		} else {
 			req.flash("info", savedDefermentRequest.error);
+		}
+		res.redirect("/dashboard");
+	})
+	.post("/delete-all", hasAccess, isAdmin, async (req, res) => {
+		const deleted = await deferment.deleteAll();
+		if (!deleted.error) {
+			req.flash("info", "All leave requests deleted successfully!");
+		} else {
+			req.flash("info", deleted.error);
 		}
 		res.redirect("/dashboard");
 	})
