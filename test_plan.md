@@ -23,9 +23,9 @@ This test plan covers the following major areas:
 
 ---
 
-## 🧾 1. Validation Test Cases
+## Validation Test Cases
 
-### 🧍‍♂️ 1.1 Login Form Validation
+### 1.1 Login Form Validation
 
 | Test ID   | Test Case                      |Input Data                                                            | Expected Result | Actual Result | Status | Notes |
 |---------  |-----------                     |------------|-----------------|---------------|---------|-------|
@@ -45,7 +45,7 @@ This test plan covers the following major areas:
 | LOGIN-014 | Unicode Characters | Username: `用户123` | Handle unicode | ✅ PASS | ✅ PASS | Unicode characters accepted |
 | LOGIN-015 | Very Long Password | Password: 1000+ characters | Handle appropriately | ❌ FAIL | ❌ FAIL | No password length limit |
 
-### 📝 1.2 Registration Form Validation
+###  Registration Form Validation
 
 | Test ID | Test Case | Input Data | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|------------|-----------------|---------------|---------|-------|
@@ -60,7 +60,7 @@ This test plan covers the following major areas:
 | REG-009 | Password Confirmation Mismatch | Password: `pass1`, Confirm: `pass2` | Show mismatch error | ❌ FAIL | ❌ FAIL | No password confirmation field |
 | REG-010 | Email Format Validation | Username: `user@domain.com` | Validate email format | ❌ FAIL | ❌ FAIL | No email validation |
 
-### 📂 1.3 File Upload Validation
+### File Upload Validation
 
 | Test ID | Test Case | Input Data | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|------------|-----------------|---------------|---------|-------|
@@ -77,7 +77,7 @@ This test plan covers the following major areas:
 | FILE-011 | File with Special Characters | File: `test@#$%.pdf` | Handle filename sanitization | ❌ FAIL | ❌ FAIL | No filename sanitization |
 | FILE-012 | Very Long Filename | File: 255+ character filename | Handle appropriately | ❌ FAIL | ❌ FAIL | No filename length validation |
 
-### 💳 1.4 Payment Form Validation
+### 1.4 Payment Form Validation
 
 | Test ID | Test Case | Input Data | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|------------|-----------------|---------------|---------|-------|
@@ -91,7 +91,7 @@ This test plan covers the following major areas:
 | PAY-008 | Empty Payment Details | All fields empty | Show validation errors | ❌ FAIL | ❌ FAIL | No required field validation |
 | PAY-009 | Special Characters in Card | Card: `4111-1111-1111-1111` | Handle formatting | ❌ FAIL | ❌ FAIL | No card number formatting |
 
-### 📋 1.5 Form Field Validation
+### 1.5 Form Field Validation
 
 | Test ID | Test Case | Input Data | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|------------|-----------------|---------------|---------|-------|
@@ -104,9 +104,9 @@ This test plan covers the following major areas:
 
 ---
 
-## ⚙️ 2. Async Test Cases
+## 2. Async Test Cases
 
-### 📅 2.1 Event Fetching Operations
+### 2.1 Event Fetching Operations
 
 | Test ID | Test Case | API Endpoint | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|--------------|-----------------|---------------|---------|-------|
@@ -119,7 +119,7 @@ This test plan covers the following major areas:
 | ASYNC-007 | Malformed JSON Response | Server returns invalid JSON | Handle parsing error | ❌ FAIL | ❌ FAIL | No JSON parsing error handling |
 | ASYNC-008 | Partial Data Loading | Connection drops mid-request | Handle partial data | ❌ FAIL | ❌ FAIL | No partial data handling |
 
-### 🧮 2.2 Assignment Operations
+### 2.2 Assignment Operations
 
 | Test ID | Test Case | API Endpoint | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|--------------|-----------------|---------------|---------|-------|
@@ -134,7 +134,7 @@ This test plan covers the following major areas:
 | ASYNC-013 | Assignment Update | Update existing assignment | Update success | ✅ PASS | ✅ PASS | Works fine |
 | ASYNC-014 | Bulk Assignment Operations | Multiple assignment operations | Handle efficiently | ❌ FAIL | ❌ FAIL | No bulk operations |
 
-### 🔍 2.3 Unit Search Operations
+### 2.3 Unit Search Operations
 
 | Test ID | Test Case | API Endpoint | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|--------------|-----------------|---------------|---------|-------|
@@ -147,7 +147,7 @@ This test plan covers the following major areas:
 | ASYNC-021 | Search Result Pagination | Large result set | Implement pagination | ❌ FAIL | ❌ FAIL | No pagination implemented |
 | ASYNC-022 | Search History | Previous searches | Store/display history | ❌ FAIL | ❌ FAIL | No search history |
 
-### 👩‍🏫 2.4 Teacher Management Operations
+### 2.4 Teacher Management Operations
 
 | Test ID | Test Case | API Endpoint | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|--------------|-----------------|---------------|---------|-------|
@@ -158,7 +158,7 @@ This test plan covers the following major areas:
 | ASYNC-027 | Bulk Teacher Operations | Multiple teacher operations | Handle efficiently | ❌ FAIL | ❌ FAIL | No bulk operations |
 | ASYNC-028 | Teacher Search | Search teachers by name | Return filtered results | ❌ FAIL | ❌ FAIL | No search functionality |
 
-### 🎓 2.5 Student Operations
+### 2.5 Student Operations
 
 | Test ID | Test Case | API Endpoint | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|--------------|-----------------|---------------|---------|-------|
@@ -169,7 +169,7 @@ This test plan covers the following major areas:
 | ASYNC-033 | Student Grade Submission | `POST /students/submit-grade` | Submit success | ✅ PASS | ✅ PASS | Works fine |
 | ASYNC-034 | Bulk Student Operations | Multiple student operations | Handle efficiently | ❌ FAIL | ❌ FAIL | No bulk operations |
 
-### 📊 2.6 Dashboard Data Loading
+### 2.6 Dashboard Data Loading
 
 | Test ID | Test Case | API Endpoint | Expected Result | Actual Result | Status | Notes |
 |---------|-----------|--------------|-----------------|---------------|---------|-------|
