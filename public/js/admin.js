@@ -71,7 +71,6 @@ async function getEvents() {
 			eventsList.appendChild(li);
 		});
 
-		// Process the events data as needed
 	} catch (error) {
 		console.error("There has been a problem with your fetch operation:", error);
 	}
@@ -94,15 +93,12 @@ function confirmDelete() {
 	});
 }
 function formatDate(dateString) {
-	// Create a new Date object from the input date string
 	const date = new Date(dateString);
 
-	// Extract the day, month, and year from the Date object
 	const day = date.getUTCDate();
 	const month = date.toLocaleString("default", { month: "long" });
 	const year = date.getUTCFullYear();
 
-	// Return the formatted date string
 	return `${day}, ${month}, ${year}`;
 }
 

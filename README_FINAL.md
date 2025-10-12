@@ -69,7 +69,7 @@ This **School Management System** is a comprehensive platform designed to stream
 
 -----
 
-## Setup Instructions
+## How To Run
 
 1.  Clone the repository:
     ```bash
@@ -88,3 +88,9 @@ This **School Management System** is a comprehensive platform designed to stream
     ```bash
     npm start
     ```
+
+  ## Key Files and Functions
+
+  ## Demo link with time stamps
+
+  ## Evidence Locations (including git logs)
