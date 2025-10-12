@@ -3,7 +3,6 @@ async function uploadFile() {
 
 	const file = fileInput.files[0];
 
-	// Check if a file is selected
 	if (!file) {
 		Swal.fire({
 			icon: "error",
@@ -13,7 +12,6 @@ async function uploadFile() {
 		return;
 	}
 
-	// List of valid MIME types
 	const validTypes = [
 		"text/plain",
 		"application/pdf",
@@ -21,7 +19,6 @@ async function uploadFile() {
 		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 	];
 
-	// Check if the selected file type is valid
 	if (!validTypes.includes(file.type)) {
 		Swal.fire({
 			icon: "error",
@@ -31,11 +28,9 @@ async function uploadFile() {
 		return;
 	}
 
-	// Create a FormData object and append the file
 	const formData = new FormData();
 	const subject = document.getElementById("subject");
 	const description = document.getElementById("instructions");
-	// const asClass = document.getElementById("AsClass");
 	const deadlineDate = document.getElementById("deadlineDate");
 	const deadlineTime = document.getElementById("deadlineTime");
 	const unitId = document.getElementById("unitIdInput");
@@ -52,7 +47,6 @@ async function uploadFile() {
 	formData.append("more", JSON.stringify(more));
 	formData.append("unitId", unitId.value);
 
-	// Send the file to the server using fetch
 	await fetch("/upload", {
 		method: "POST",
 		body: formData,
@@ -191,7 +185,6 @@ async function getAssignments() {
 		});
 		assignmentList.classList.remove("invisible");
 
-		// Process the events data as needed
 	} catch (error) {
 		console.error("There has been a problem with your fetch operation:", error);
 	}
@@ -296,13 +289,11 @@ async function getAssignments2() {
 
 		assignmentList.classList.remove("invisible");
 
-		// Process the events data as needed
 	} catch (error) {
 		console.error("There has been a problem with your fetch operation:", error);
 	}
 }
 
-// getAssignments2();
 
 function confirmDelete(id) {
 	Swal.fire({
@@ -315,34 +306,26 @@ function confirmDelete(id) {
 		cancelButtonColor: "#d33",
 	}).then((result) => {
 		if (result.isConfirmed) {
-			// deleteAssignment(unitId, id, filePath);
 			document.getElementById(id).submit();
 		}
 	});
 }
 
 function formatDate(dateString) {
-	// Create a new Date object from the input date string
 	const date = new Date(dateString);
 
-	// Extract day, month, and year from the date object
 	const day = date.getUTCDate();
-	const month = date.getUTCMonth() + 1; // Months are zero-based, so add 1
+	const month = date.getUTCMonth() + 1; 
 	const year = date.getUTCFullYear();
-
-	// Format day and month to be two digits
 	const formattedDay = day < 10 ? "0" + day : day;
 	const formattedMonth = month < 10 ? "0" + month : month;
 
-	// Format year to be in yy format
 	const formattedYear = year.toString().slice(-2);
 
-	// Return the formatted date string in dd/mm/yy format
 	return `${formattedDay}/${formattedMonth}/${formattedYear}`;
 }
 async function deleteAssignment(assignmentId, unitId, filePath) {
 	try {
-		// Send a POST request to the API
 		const response = await fetch(
 			`/units/assignments/delete/${assignmentId}/${unitId}`,
 			{
@@ -350,25 +333,20 @@ async function deleteAssignment(assignmentId, unitId, filePath) {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ filePath }), // Send file path as part of the request body
+				body: JSON.stringify({ filePath }), 
 			}
 		);
 
-		// Check if the response was successful
 		const result = await response.json();
 
 		if (response.ok && result.success) {
-			// Display success message
 			console.log(result.message);
-			// Optionally update UI or show alert
 			alert("Assignment deleted successfully");
 		} else {
-			// Handle the error returned from the server
 			console.error(result.message);
 			alert(`Error: ${result.message}`);
 		}
 	} catch (error) {
-		// Handle network or other errors
 		console.error("An error occurred:", error);
 		alert("An error occurred while deleting the assignment.");
 	}
