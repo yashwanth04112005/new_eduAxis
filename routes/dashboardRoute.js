@@ -24,16 +24,18 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
         const classes = await Class.find({}).sort({ className: 1 });
         const timetableList = await timetable.list();
         const feesStructures = await fees.list();
-        const commonData = {
-            userName: req.user.username,
-            userId: req.user._id,
-            userType: dashType,
-            formatDate: formatDate,
-            deadlineReached: deadlineReached,
-            timetables: timetableList,
-            feesStructures: feesStructures,
-            messages: req.flash("info"),
-        };
+        const commonData = {
+            userName: req.user.username,
+            userId: req.user._id,
+            userType: dashType,
+            formatDate: formatDate,
+            deadlineReached: deadlineReached,
+            timetables: timetableList,
+            feesStructures: feesStructures,
+            info: req.flash("info"),
+            success: req.flash("success"),
+            error: req.flash("error"),
+        };
         const fetchAdminData = async () => {
             // 1. Add 'allPayments' to the list of variables to receive data
             const [numbers, classes, allTeachers, user, allStudents, deferments, allPayments] =

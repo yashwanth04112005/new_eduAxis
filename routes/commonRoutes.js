@@ -34,10 +34,12 @@ router
 		res.render("home");
 	})
 	.get("/login", (req, res) => {
-		res.render("login", { messages: req.flash("info") });
+		const messages = req.session ? req.flash() : {};
+		res.render("login", { messages });
 	})
 	.get("/register", (req, res) => {
-		res.render("register", { messages: req.flash("info") });
+		const messages = req.session ? req.flash() : {};
+		res.render("register", { messages });
 	})
 	.post("/units", thisGuy.hasAccess, async (req, res) => {
 		try {
@@ -164,17 +166,12 @@ router
 			res.status(500).send("Internal Server Error");
 		}
 	})
-	.get("/logout", (req, res) => {
-		const username = req.user ? req.user.username : '';
-		req.flash("success", "Goodbye, " + username + "! You have been successfully logged out");
-		req.session.destroy((err) => {
-			if (err) {
-				console.log("Error destroying session:", err);
-			}
-			res.render('login', { 
-				messages: req.flash(),
-				redirect: '/login'
-			});
+	.get("/logout", (req, res, next) => {
+		// Use passport's logout to clear the login session correctly
+		req.logout((err) => {
+			if (err) return next(err);
+			// Redirect to login; client-side will show any farewell toast before calling this
+			return res.redirect('/login');
 		});
 	})
 	.post("/register", thisGuy.register)

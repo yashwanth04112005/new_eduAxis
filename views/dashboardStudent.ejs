@@ -70,7 +70,7 @@
 							</li>
 							<li>
 								<a
-									href="/logout"
+									href="/logout" data-logout
 									data-uk-icon="icon:  sign-out"
 									title="Sign Out"
 									data-uk-tooltip
@@ -306,7 +306,7 @@
 					
 					<li>
 						<a
-							href="/logout"
+							href="/logout" data-logout
 							class="uk-icon-link"
 							data-uk-tooltip="Sign out"
 							data-uk-icon="icon: sign-out"
@@ -744,7 +744,7 @@
 		<!-- CONTENT -->
 		<div id="content" data-uk-height-viewport="expand: true">
 			<div class="uk-container uk-container-expand">
-				<%- include("./partials/alerts.ejs") %>
+				<%- include("./partials/alerts.ejs", { info: typeof info !== 'undefined' ? info : [], success: typeof success !== 'undefined' ? success : [], error: typeof error !== 'undefined' ? error : [] }) %>
 
 				<div
 					class="uk-grid uk-grid-divider uk-grid-medium uk-child-width-1-2 uk-child-width-1-4@l uk-child-width-1-5@xl justify-content-center"
@@ -1346,5 +1346,6 @@
 		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script> -->
 		<script src="js/chartScripts.js"></script>
 		<script src="js/student.js"></script>
+		<script src="js/logout.js"></script>
 	</body>
 </html>

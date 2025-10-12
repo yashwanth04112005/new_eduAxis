@@ -1,6 +1,6 @@
 const Admin = require("../models/adminModel");
 const Teacher = require("../models/teacherModel");
-const Student = require("../models/teacherModel");
+const Student = require("../models/studentModel");
 const passport = require("passport");
 
 const { countMembers } = require("../controllers/functions");
@@ -9,23 +9,23 @@ const thisGuy = {
 		if (req.isAuthenticated()) {
 			next();
 		} else {
-			req.flash("error", "Please log in to access this page");
+				if (req.session) req.flash("error", "Please log in to access this page");
 			res.redirect("/login");
 		}
 	},
 	isAdmin: async (req, res, next) => {
-		if (req.session.passport.user.type === "Admin") {
+			if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.type === "Admin") {
 			next();
 		} else {
-			req.flash("error", "Access denied. Administrator privileges required.");
+				if (req.session) req.flash("error", "Access denied. Administrator privileges required.");
 			res.redirect("/dashboard");
 		}
 	},
 	isTeacher: async (req, res, next) => {
-		if (req.session.passport.user.type === "Teacher") {
+			if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.type === "Teacher") {
 			next();
 		} else {
-			req.flash("error", "Access denied. Teacher privileges required.");
+				if (req.session) req.flash("error", "Access denied. Teacher privileges required.");
 			res.redirect("/dashboard");
 		}
 	},
