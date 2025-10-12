@@ -6,6 +6,6 @@
 // add an option for students to pay the amount
  
 // signout button in dashboard
-//teacher deleting assignments
+//teacher deleting assignments from any device not only local 
 // reject leave in admin
 // view assignment submissions in teacher dashboard
