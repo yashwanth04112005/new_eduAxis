@@ -6,6 +6,8 @@ const assignment = require("../controllers/assignmentController");
 const flash = require("connect-flash");
 const thisGuy = require("../middleware/authentications");
 const path = require("path");
+const messages = require("../controllers/messageController");
+const Student = require("../models/studentModel");
 const { combineDateTime } = require("../controllers/functions");
 const { deleteFile } = require("../controllers/fileController");
 
@@ -38,6 +40,24 @@ router
 					deadline
 				);
 				const savedToUnit = await unit.assignment.save(saveStatus._id, unitId);
+
+				// Notify all students in the unit about the new assignment (simple message)
+				try {
+					const theUnit = await unit.getUnit(unitId);
+					if (theUnit && theUnit.members && theUnit.members.length) {
+						await Promise.all(
+							theUnit.members.map((studentId) =>
+								messages.save(
+									Student,
+									`New assignment uploaded: ${goodTitle[0]}`,
+									studentId
+								)
+							)
+						);
+					}
+				} catch (notifyErr) {
+					console.warn("Notification error:", notifyErr?.message || notifyErr);
+				}
 				res.status(201).json({
 					message: "File uploaded and saved successfully",
 					assignment: saveStatus,
@@ -72,7 +92,7 @@ router
 				res.redirect(`/dashboard`);
 			} catch (err) {
 				req.flash("info", err.message);
-				req.redirect("/dashboard");
+				res.redirect("/dashboard");
 				// res.status(500).json({ message: err.message });
 			}
 		}

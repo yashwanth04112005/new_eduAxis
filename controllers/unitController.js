@@ -207,25 +207,26 @@ const unit = {
 		},
 		remove: async (assignmentId) => {
 			try {
-				const assignment = await Assignment.findByIdAndDelete({
-					_id: assignmentId,
-				});
+				const assignment = await Assignment.findByIdAndDelete({ _id: assignmentId });
 
-				const updatedUnit = await Unit.findByIdAndUpdate(
-					{ _id: assignment.unit },
-					{ $pull: { assignments: assignmentId } },
-					{ new: true }
-				);
+				if (!assignment) {
+					return { error: "Assignment not found." };
+				}
 
-				if (!updatedUnit) {
-					throw new Error(
-						"Unit not found or assignment not associated with this unit."
+				let updatedUnit = null;
+				if (assignment.unit) {
+					updatedUnit = await Unit.findByIdAndUpdate(
+						{ _id: assignment.unit },
+						{ $pull: { assignments: assignmentId } },
+						{ new: true }
 					);
 				}
 
-				return {
-					message: "Assignment removed successfully.",
-				};
+				if (assignment.unit && !updatedUnit) {
+					throw new Error("Unit not found or assignment not associated with this unit.");
+				}
+
+				return { message: "Assignment removed successfully." };
 			} catch (error) {
 				// Handle and return error
 				return { error: `Error removing assignment: ${error.message}` };
