@@ -6,3 +6,5 @@
 // add an option for students to pay the amount
 // signout button in dashboard
 //teacher deleting assignments
+// reject leave in admin
+
