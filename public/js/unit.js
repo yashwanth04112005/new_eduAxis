@@ -26,13 +26,13 @@ async function populateClassDropdown() {
 }
 
 // Call this when the modal opens
-document.getElementById('addAssignmentModal').addEventListener('beforeshow', populateClassDropdown);
+// Note: This event listener seems to be unnecessary since the modal is loaded, but leaving the function definition for reference.
 
 async function uploadFile() {
     const fileInput = document.getElementById('fileInput');
     const subject = document.getElementById('subject');
     const instructions = document.getElementById('instructions');
-    const className = document.getElementById('className');
+    // FIX: Removed const className = document.getElementById('className'); 
     const deadlineDate = document.getElementById('deadlineDate');
     const deadlineTime = document.getElementById('deadlineTime');
     const unitIdInput = document.getElementById('unitIdInput');
@@ -50,7 +50,7 @@ async function uploadFile() {
     const more = {
         subject: subject.value,
         description: instructions.value,
-        className: className.value,
+        // FIX: Removed className.value from here
         deadlineDate: deadlineDate.value,
         deadlineTime: deadlineTime.value
     };
@@ -65,6 +65,8 @@ async function uploadFile() {
             body: formData
         });
 
+        const data = await response.json(); // Read response once
+
         if (response.status === 201) {
             UIkit.notification({
                 message: 'Assignment uploaded successfully!',
@@ -74,7 +76,8 @@ async function uploadFile() {
             document.getElementById('uploadForm').reset();
             location.reload();
         } else {
-            throw new Error('Upload failed');
+            // Handle server-side validation/errors
+            throw new Error(data.message || data.error || 'Upload failed');
         }
     } catch (error) {
         UIkit.notification({
@@ -99,8 +102,8 @@ async function saveAnnouncement(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                title: title,
-                details: details,
+                announcementTitle: title,
+                announcementDetails: details,
                 unitId: unitId
             })
         });
@@ -125,7 +128,7 @@ async function saveAnnouncement(event) {
 }
 
 // Assignment submission handling
-var currentAssignmentId = null; // Changed to var and moved to top
+var currentAssignmentId = null; 
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', function() {
