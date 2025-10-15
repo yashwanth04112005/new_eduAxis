@@ -1,7 +1,4 @@
-// Message Triggers - Integration script for dynamic messages
-// This script provides easy-to-use functions for triggering dynamic message updates
 
-// Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize message triggers after messages.js is loaded
     setTimeout(initializeMessageTriggers, 1000);
