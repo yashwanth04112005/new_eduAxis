@@ -92,6 +92,15 @@ class MessageManager {
                                 <span class="${statusClass}">${statusIcon}</span>
                                 ${statusText}
                             </div>
+                            <div class="uk-width-auto">
+                                <button 
+                                    class="uk-icon-button" 
+                                    uk-icon="trash"
+                                    onclick="deleteMessage('${messageData.id || messageId}')"
+                                    title="Delete message"
+                                    style="color: #dc3545;"
+                                ></button>
+                            </div>
                         </div>
                     </div>
                     <div class="uk-card-media"></div>
