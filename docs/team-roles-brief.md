@@ -1,34 +1,34 @@
 # EduAxis - Team Roles (5 Members)
 
-## 1. Backend Developer
+## 1. Backend Developer (Adithya)
 - Handles server setup and database management
 - Implements user authentication (Passport.js)
 - Manages MongoDB models and relationships
 - Handles core server functionality
 - Files: `server.js`, `/models`, `/middleware`, database setup
 
-## 2. Frontend Developer
+## 2. Frontend Developer (Gowtham)
 - Creates and maintains all EJS templates
 - Implements UI design using UIkit
 - Manages client-side JavaScript
 - Handles responsive design
 - Files: `/views`, `/public/css`, `/public/js`
 
-## 3. Student Module Developer
+## 3. Student Module Developer (Yashwanth)
 - Implements student-related features
 - Handles assignment submission system
 - Manages unit/class enrollment
 - Student dashboard functionality
 - Files: `studentController.js`, assignment handling, unit management
 
-## 4. Teacher Module Developer
+## 4. Teacher Module Developer (Balaji)
 - Develops teacher dashboard
 - Manages assignment creation and grading
 - Handles unit/class creation and management
 - Implements teacher messaging system
 - Files: `teacherController.js`, `unitController.js`, teacher dashboard features
 
-## 5. Admin Module Developer
+## 5. Admin Module Developer (Tharun)
 - Implements admin dashboard
 - Handles user management (students/teachers)
 - Manages fees structure and payments
