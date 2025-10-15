@@ -427,17 +427,22 @@
 										name="announcementTitle"
 										id="announcementTitle"
 										placeholder=""
+										required
+										minlength="3"
 									/>
-									<label for="announcementTitle">Title</label>
+									<label for="announcementTitle">Title *</label>
 								</div>
 								<div class="form-floating mb-3">
-									<input
-										type="text"
+									<textarea
 										class="form-control"
 										name="announcementDetails"
 										id="announcementDetails"
 										placeholder=""
-									/>
+										required
+										minlength="10"
+										rows="3"
+										style="height: 100px"
+									></textarea>
 									<label for="announcementDetails">Details</label>
 								</div>
 							</div>
