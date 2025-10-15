@@ -87,7 +87,6 @@ function setupLeaveRequestTriggers() {
 }
 
 function setupFormTriggers() {
-    // Generic form success triggers
     const successButtons = document.querySelectorAll('[data-success-message]');
     successButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -95,7 +94,9 @@ function setupFormTriggers() {
             const type = this.getAttribute('data-message-type') || 'success';
             
             setTimeout(() => {
+
                 if (window.MessageManager) {
+
                     window.MessageManager.addSystemMessage(message, type);
                 }
             }, 500);
