@@ -26,107 +26,77 @@
 				></button>
 			</div>
 			<div class="modal-body">
-				<div class="container-fluid">
-					<% user.messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(message=>{ %>
-					<div class="nature-card">
-						<div class="uk-card uk-card-small uk-card-default">
-							<div class="uk-card-header">
-								<div class="uk-grid uk-grid-small uk-text-small" data-uk-grid>
-									<div
-										class="uk-width-expand"
-										title="Unit Code"
-										data-uk-tooltip
-									>
-										<span class="cat-txt"> Alert</span>
-									</div>
-
-									<div
-										class="uk-width-auto uk-text-right uk-text-muted"
-										title="Members"
-										data-uk-tooltip
-									>
-										<% if (!message.read) { %>
-										<span class="uk-text-success"> 🔴 </span>
-										New <% }else{ %>
-
-										<span class="uk-text-success"> 🟢 </span>
-										Read <% } %>
+				<div class="container-fluid" id="messagesContainer">
+					<!-- Messages will be dynamically loaded here -->
+					<% if (user.messages && user.messages.length > 0) { %>
+						<% user.messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(message=>{ %>
+						<div class="nature-card" data-message-id="<%= message._id || message.id %>" data-read="<%= message.read %>">
+							<div class="uk-card uk-card-small uk-card-default">
+								<div class="uk-card-header">
+									<div class="uk-grid uk-grid-small uk-text-small" data-uk-grid>
+										<div class="uk-width-expand" title="Alert" data-uk-tooltip>
+											<span class="cat-txt">Alert</span>
+										</div>
+										<div class="uk-width-auto uk-text-right uk-text-muted" title="Status" data-uk-tooltip>
+											<% if (!message.read) { %>
+											<span class="uk-text-danger">🔴</span> New
+											<% } else { %>
+											<span class="uk-text-success">🟢</span> Read
+											<% } %>
+										</div>
 									</div>
 								</div>
+								<div class="uk-card-media"></div>
+								<div class="uk-card-body">
+									<h6 class="uk-margin-small-bottom uk-margin-remove-adjacent uk-text-bold">
+										<%= message.title %>
+									</h6>
+									<p class="uk-text-small uk-text-muted">
+										<%= formatDate(message.createdAt) %> at <%= new Date(message.createdAt).toLocaleTimeString() %>
+									</p>
+								</div>
 							</div>
-							<div class="uk-card-media"></div>
-
-							<div class="uk-card-body">
-								<% let thdate %>
-								<h6
-									class="uk-margin-small-bottom uk-margin-remove-adjacent uk-text-bold"
-								>
-									<%= message.title %>
-								</h6>
-								<% thdate = new Date(message.createdAt).toLocaleTimeString() %>
-
-								<p class="uk-text-small uk-text-muted">
-									<%= formatDate(message.createdAt) %> at <%= thdate %>
-								</p>
-							</div>
-							<!-- <div class="uk-card-footer">
-										<div
-											class="uk-grid uk-grid-small uk-grid-divider uk-flex uk-flex-middle"
-											data-uk-grid
-										>
-											<div
-												class="uk-width-expand uk-text-small"
-												title="Lecturer"
-												data-uk-tooltip
-											>
-												Lec:
-											</div>
-										</div>
-									</div> -->
 						</div>
-					</div>
-
-					<% }) %>
+						<% }) %>
+					<% } else { %>
+						<div class="uk-text-center uk-text-muted uk-padding">
+							<p>No messages available</p>
+						</div>
+					<% } %>
 				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 					Close
 				</button>
-				<% if (newMessages > 0) { %>
-				<form
-					action="/<%= theUserType %>/messages/markasread/<%= user._id %>"
-					method="post"
-				>
-					<button type="submit" class="btn btn-primary">
-						Mark All As Read
-						<i data-uk-icon="icon: check"></i>
-					</button>
-				</form>
-
-				<% }else{ %>
-				<button type="submit" class="btn btn-info disabled">
+				
+				<!-- Dynamic Mark All As Read Button -->
+				<button type="button" class="btn btn-primary" id="markAllAsReadBtn" onclick="markAllMessagesAsRead()" style="display: none;">
+					Mark All As Read
+					<i data-uk-icon="icon: check"></i>
+				</button>
+				
+				<button type="button" class="btn btn-info disabled" id="noNewMessagesBtn">
 					No New Messages
 					<i data-uk-icon="icon: check"></i>
 				</button>
-				<% } %> <% if (user.messages.length > 0) { %>
-				<form
-					action="/<%= theUserType %>/messages/delete/<%= user._id %>"
-					method="post"
-				>
-					<button type="submit" class="btn btn-primary">
-						Delete All
-						<i data-uk-icon="icon: trash"></i>
-					</button>
-				</form>
-
-				<% } %>
+				
+				<!-- Dynamic Delete All Button -->
+				<button type="button" class="btn btn-danger" id="deleteAllMessagesBtn" onclick="deleteAllMessages()" style="display: none;">
+					Delete All
+					<i data-uk-icon="icon: trash"></i>
+				</button>
 			</div>
 		</div>
 	</div>
 </div>
 
 <script>
+	// Include the messages.js script
+	const messagesScript = document.createElement('script');
+	messagesScript.src = '/js/messages.js';
+	document.head.appendChild(messagesScript);
+
 	var messagesModal = document.getElementById("messagesModal");
 
 	messagesModal.addEventListener("show.bs.modal", function (event) {
@@ -135,6 +105,56 @@
 		// Extract info from data-bs-* attributes
 		let recipient = button.getAttribute("data-bs-whatever");
 
-		// Use above variables to manipulate the DOM
+		// Initialize message manager if not already done
+		if (window.messageManager) {
+			window.messageManager.updateMessageCount();
+		}
+	});
+
+	// Dynamic message functions
+	function markAllMessagesAsRead() {
+		if (window.MessageManager) {
+			window.MessageManager.markAllAsRead();
+			
+			// Send request to server to mark as read (optional - for persistence)
+			const userId = '<%= user._id %>';
+			const userType = '<%= theUserType %>';
+			
+			fetch(`/${userType}/messages/markasread/${userId}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				}
+			}).catch(error => console.log('Mark as read request failed:', error));
+		}
+	}
+
+	function deleteAllMessages() {
+		if (window.MessageManager) {
+			// Show confirmation dialog
+			if (confirm('Are you sure you want to delete all messages?')) {
+				window.MessageManager.clearAll();
+				
+				// Send request to server to delete messages (optional - for persistence)
+				const userId = '<%= user._id %>';
+				const userType = '<%= theUserType %>';
+				
+				fetch(`/${userType}/messages/delete/${userId}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					}
+				}).catch(error => console.log('Delete messages request failed:', error));
+			}
+		}
+	}
+
+	// Initialize message count on page load
+	document.addEventListener('DOMContentLoaded', function() {
+		setTimeout(() => {
+			if (window.messageManager) {
+				window.messageManager.updateMessageCount();
+			}
+		}, 1000);
 	});
 </script>

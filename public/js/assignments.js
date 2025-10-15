@@ -74,6 +74,24 @@ async function uploadFile() {
 				html: ` uploaded successfully!`,
 				icon: "success",
 			});
+			
+			// Add dynamic message notification
+			if (window.MessageManager) {
+				window.MessageManager.addSystemMessage(
+					`Assignment "${more.subject}" uploaded successfully`, 
+					'success'
+				);
+			}
+			
+			// Dispatch custom event for other components
+			document.dispatchEvent(new CustomEvent('assignmentSubmitted', {
+				detail: {
+					title: more.subject,
+					description: more.description,
+					deadline: more.deadlineDate
+				}
+			}));
+			
 			await setTimeout(location.reload(), 4000);
 		})
 		.then(resetForm())
