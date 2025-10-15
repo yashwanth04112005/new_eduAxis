@@ -303,17 +303,17 @@
 								data-uk-close
 							></button>
 							<div class="mb-3">
-								<label for="title" class="form-label"
-									>Title</label
-								>
+								<label for="title" class="form-label">Title</label>
 								<input
 									type="text"
 									class="form-control"
 									id="title"
 									name="title"
-									required 
-									
+									required
+									pattern="^(?!\\s*$)(?![0-9\\s]+$).+"
+									title="Title cannot be only numbers"
 								/>
+								<small class="form-text text-muted">Letters or letters+numbers are allowed. Numbers-only titles are not allowed.</small>
 							</div>
 							<div class="mb-3">
 								<label for="eventDescription" class="form-label"
