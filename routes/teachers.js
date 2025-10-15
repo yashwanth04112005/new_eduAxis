@@ -25,20 +25,25 @@ router
 		thisGuy.hasAccess,
 		thisGuy.isAdmin,
 		async (req, res) => {
-			Teacher.register(
-				{ username: req.body.username },
-				req.body.password,
-				(err, user) => {
-					if (err) {
-						res.status(500).json({ error: err });
-						console.log(err);
-						// res.redirect("/register");
-					} else {
-						req.flash("info", "Lecturer Added Successfully!");
-						res.redirect("/dashboard");
+			try {
+				Teacher.register(
+					{ username: req.body.username },
+					req.body.password,
+					async (err, user) => {
+						if (err) {
+							return res.status(400).json({ message: err.message || String(err) });
+						}
+						try {
+							const lean = await Teacher.findById(user._id).lean();
+							return res.status(201).json({ message: "Lecturer added", teacher: { _id: lean._id, username: lean.username, createdAt: lean.createdAt } });
+						} catch (e) {
+							return res.status(201).json({ message: "Lecturer added", teacher: { _id: user._id, username: user.username } });
+						}
 					}
-				}
-			);
+				);
+			} catch (e) {
+				return res.status(500).json({ message: e.message || 'Error adding teacher' });
+			}
 		}
 	)
 	// ? CHANGE PASSWORD
@@ -54,9 +59,7 @@ router
 					return res.status(500).json({ error: err.message });
 				}
 				await theTeacher.save();
-				req.flash("info", "Password Changed Successfully!");
-				res.status(200).redirect("/dashboard");
-				// res.status(200).json({ message: "Password updated successfully" });
+				return res.status(200).json({ message: "Password updated successfully" });
 			});
 		} catch (err) {
 			res.status(500).json({ error: err.message });
@@ -129,12 +132,10 @@ router
 				const theTeacher = await Teacher.findByIdAndDelete(req.params.id);
 
 				if (!theTeacher) {
-					req.flash("info", "Teacher not found");
-					// return res.status(404).json({ error: "Teacher not found" });
+					return res.status(404).json({ message: "Teacher not found" });
 				} else {
-					req.flash("info", "Teacher Deleted Successfully");
+					return res.status(200).json({ message: "Teacher deleted" });
 				}
-				res.redirect("/dashboard");
 			} catch (err) {
 				res.status(500).json({ error: err.message });
 			}

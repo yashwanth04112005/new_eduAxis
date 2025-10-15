@@ -17,25 +17,15 @@ router.get("/classes", thisGuy.hasAccess, async (req, res) => {
 // Route to create a new class
 router.post("/classes", thisGuy.hasAccess, async (req, res) => {
 	try {
-		const { className, classCode } = req.body;
-
-		// Create a new class
+		const { className } = req.body;
 		const newClass = new Class({
 			className: className,
 			classCode: className,
 		});
-
-		// Save the class to the database
 		const savedClass = await newClass.save();
-
-		req.flash("info", "Class Added Successfully!");
-		res.redirect("/dashboard");
+		return res.status(201).json({ message: "Class added", class: savedClass });
 	} catch (error) {
-		// Handle errors
-		console.error("Error creating class:", error);
-		res
-			.status(500)
-			.json({ message: "Error creating class", error: error.message });
+		return res.status(500).json({ message: "Error creating class", error: error.message });
 	}
 });
 // Route to get a specific class by ID
@@ -56,11 +46,10 @@ router.post("/classes/delete/:id", thisGuy.hasAccess, async (req, res) => {
 		if (!classItem) {
 			return res.status(404).json({ message: "Class not found" });
 		}
-		await Class.findByIdAndDelete(req.params.id); // Using findByIdAndDelete for direct deletion
-		res.redirect("/dashboard");
+		await Class.findByIdAndDelete(req.params.id);
+		return res.status(200).json({ message: "Class deleted" });
 	} catch (err) {
-		console.error("Error deleting class:", err); // Log the error for debugging
-		res.status(500).json({ message: "Internal Server Error" });
+		return res.status(500).json({ message: "Internal Server Error" });
 	}
 });
 

@@ -8,18 +8,25 @@ router.use(flash());
 
 router
 	.post("/students/add", thisGuy.hasAccess, async (req, res) => {
-		Student.register(
-			{ username: req.body.username },
-			req.body.password,
-			(err, user) => {
-				if (err) {
-					req.flash("info", err);
-				} else {
-					req.flash("info", "Student Added Successfully!");
-					res.redirect("/dashboard");
+		try {
+			Student.register(
+				{ username: req.body.username },
+				req.body.password,
+				async (err, user) => {
+					if (err) {
+						return res.status(400).json({ message: err.message || String(err) });
+					}
+					try {
+						const lean = await Student.findById(user._id).lean();
+						return res.status(201).json({ message: "Student added", student: { _id: lean._id, username: lean.username, createdAt: lean.createdAt } });
+					} catch (e) {
+						return res.status(201).json({ message: "Student added", student: { _id: user._id, username: user.username } });
+					}
 				}
-			}
-		);
+			);
+		} catch (e) {
+			return res.status(500).json({ message: e.message || 'Error adding student' });
+		}
 	})
 	.post("/students/:id/class", thisGuy.hasAccess, async (req, res) => {
 		const studentId = req.params.id;
@@ -81,11 +88,10 @@ router
 		const { id } = req.params;
 		const deletedStudent = await student.deleteStudent(id);
 		if (!deletedStudent.error) {
-			req.flash("info", "Student Deleted Successfully!");
+			return res.status(200).json({ message: "Student deleted" });
 		} else {
-			req.flash("info", deletedStudent.error);
+			return res.status(400).json({ message: deletedStudent.error });
 		}
-		res.redirect("/dashboard");
 	})
 	.post(
 		"/students/messages/markasread/:id",
@@ -127,9 +133,7 @@ router
 					return res.status(500).json({ error: err.message });
 				}
 				await theStudent.save();
-				req.flash("info", "Password Changed Successfully!");
-					res.status(200).redirect("/dashboard");
-				// res.status(200).json({ message: "Password updated successfully" });
+				return res.status(200).json({ message: "Password updated successfully" });
 			});
 		} catch (err) {
 			res.status(500).json({ error: err.message });

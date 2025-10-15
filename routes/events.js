@@ -84,10 +84,10 @@ router.post(
     });
 
     try {
-      await event.save();
-      res.redirect("/dashboard");
+      const saved = await event.save();
+      return res.status(201).json({ message: "Event created", event: saved });
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      return res.status(400).json({ message: err.message });
     }
   }
 );
@@ -101,16 +101,15 @@ router.post(
     try {
       const event = await Event.findByIdAndDelete(req.params.id);
       if (event) {
-        res.redirect("/dashboard");
+        return res.status(200).json({ message: "Event deleted" });
       } else {
-        res.status(404).json({ message: "Event not found" });
+        return res.status(404).json({ message: "Event not found" });
       }
     } catch (err) {
-      if (err.kind === "ObjectId") {
-        res.status(400).json({ message: "Invalid Event ID" });
-      } else {
-        res.status(500).json({ message: err.message });
+      if (err && err.kind === "ObjectId") {
+        return res.status(400).json({ message: "Invalid Event ID" });
       }
+      return res.status(500).json({ message: err?.message || 'Server error' });
     }
   }
 );
