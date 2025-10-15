@@ -1,118 +1,153 @@
 const express = require("express");
 const router = express.Router();
 const Event = require("../models/events");
+const thisGuy = require("../middleware/authentications"); // add guards
 
-// Route to get all events
+const startOfToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+// Route to get all events (only today and future, soonest first)
 router.get("/events", async (req, res) => {
-	try {
-		const events = await Event.find();
-		const sortedEvents = events.sort(
-			(a, b) => new Date(a.eventDate) - new Date(b.eventDate)
-		);
-
-		res.status(200).json(sortedEvents);
-	} catch (err) {
-		res.status(500).json({ message: err.message });
-	}
+  try {
+    const events = await Event.find({ eventDate: { $gte: startOfToday() } }).sort({
+      eventDate: 1,
+    });
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 // Route to get a specific event by ID
 router.get("/events/:id", async (req, res) => {
-	try {
-		const event = await Event.findById(req.params.id);
-		if (event) {
-			res.status(200).json(event);
-		} else {
-			res.status(404).json({ message: "Event not found" });
-		}
-	} catch (err) {
-		res.status(500).json({ message: err.message });
-	}
+  try {
+    const event = await Event.findById(req.params.id);
+    if (event) {
+      res.status(200).json(event);
+    } else {
+      res.status(404).json({ message: "Event not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-// Route to insert one event
-router.post("/events", async (req, res) => {
-	function getCurrentDate() {
-		const months = [
-			"January",
-			"February",
-			"March",
-			"April",
-			"May",
-			"June",
-			"July",
-			"August",
-			"September",
-			"October",
-			"November",
-			"December",
-		];
-		const today = new Date();
-		const day = String(today.getDate()).padStart(2, "0");
-		const month = months[today.getMonth()];
-		const year = today.getFullYear();
-		return `${day}, ${month}, ${year}`;
-	}
+// Route to insert one event (admin only; date must be today/future)
+router.post(
+  "/events",
+  thisGuy.hasAccess,
+  thisGuy.isAdmin,
+  async (req, res) => {
+    function getCurrentDate() {
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, "0");
+      const month = months[today.getMonth()];
+      const year = today.getFullYear();
+      return `${day}, ${month}, ${year}`;
+    }
 
-	const event = new Event({
-		author: req.user.username,
-		published: getCurrentDate(),
-		title: req.body.title,
-		description: req.body.description,
-		eventDate: req.body.eventDate,
-	});
+    const eventDate = new Date(req.body.eventDate);
+    if (isNaN(eventDate.getTime())) {
+      return res.status(400).json({ message: "Invalid eventDate" });
+    }
+    const eventDay = new Date(eventDate);
+    eventDay.setHours(0, 0, 0, 0);
+    if (eventDay < startOfToday()) {
+      return res.status(400).json({
+        message: "Event date must be today or a future date",
+      });
+    }
 
-	try {
-		const newEvent = await event.save();
-		res.redirect("/dashboard");
-	} catch (err) {
-		res.status(400).json({ message: err.message });
-	}
-});
+    const event = new Event({
+      author: req.user.username,
+      published: getCurrentDate(),
+      title: req.body.title,
+      description: req.body.description,
+      eventDate: eventDate,
+    });
 
-// Route to delete one event by ID
-router.post("/events/delete/:id", async (req, res) => {
-	try {
-		const event = await Event.findByIdAndDelete(req.params.id);
-		if (event) {
-			res.redirect("/dashboard");
-		} else {
-			res.status(404).json({ message: "Event not found" });
-		}
-	} catch (err) {
-		if (err.kind === "ObjectId") {
-			res.status(400).json({ message: "Invalid Event ID" });
-		} else {
-			res.status(500).json({ message: err.message });
-		}
-	}
-});
+    try {
+      await event.save();
+      res.redirect("/dashboard");
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
+);
 
-// Route to update the content of a particular event
-router.patch("/events/:id", async (req, res) => {
-	try {
-		const event = await Event.findById(req.params.id);
-		if (event) {
-			if (req.body.title != null) {
-				event.title = req.body.title;
-			}
-			if (req.body.published != null) {
-				event.published = req.body.published;
-			}
-			if (req.body.description != null) {
-				event.description = req.body.description;
-			}
-			if (req.body.eventDate != null) {
-				event.eventDate = req.body.eventDate;
-			}
-			const updatedEvent = await event.save();
-			res.status(200).json(updatedEvent);
-		} else {
-			res.status(404).json({ message: "Event not found" });
-		}
-	} catch (err) {
-		res.status(400).json({ message: err.message });
-	}
-});
+// Route to delete one event by ID (admin only)
+router.post(
+  "/events/delete/:id",
+  thisGuy.hasAccess,
+  thisGuy.isAdmin,
+  async (req, res) => {
+    try {
+      const event = await Event.findByIdAndDelete(req.params.id);
+      if (event) {
+        res.redirect("/dashboard");
+      } else {
+        res.status(404).json({ message: "Event not found" });
+      }
+    } catch (err) {
+      if (err.kind === "ObjectId") {
+        res.status(400).json({ message: "Invalid Event ID" });
+      } else {
+        res.status(500).json({ message: err.message });
+      }
+    }
+  }
+);
+
+// Route to update an event (admin only; validate date if provided)
+router.patch(
+  "/events/:id",
+  thisGuy.hasAccess,
+  thisGuy.isAdmin,
+  async (req, res) => {
+    try {
+      const event = await Event.findById(req.params.id);
+      if (!event) return res.status(404).json({ message: "Event not found" });
+
+      if (req.body.title != null) event.title = req.body.title;
+      if (req.body.published != null) event.published = req.body.published;
+      if (req.body.description != null) event.description = req.body.description;
+      if (req.body.eventDate != null) {
+        const d = new Date(req.body.eventDate);
+        if (isNaN(d.getTime()))
+          return res.status(400).json({ message: "Invalid eventDate" });
+        const day = new Date(d);
+        day.setHours(0, 0, 0, 0);
+        if (day < startOfToday()) {
+          return res.status(400).json({
+            message: "Event date must be today or a future date",
+          });
+        }
+        event.eventDate = d;
+      }
+
+      const updatedEvent = await event.save();
+      res.status(200).json(updatedEvent);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
+);
 
 module.exports = router;
