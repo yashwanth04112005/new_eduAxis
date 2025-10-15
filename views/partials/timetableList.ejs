@@ -162,8 +162,11 @@
 								type="file"
 								id="timetable"
 								name="timetable"
+								accept=".pdf,.jpg,.jpeg"
 								required
+								onchange="validateFileType(this, 'timetable')"
 							/>
+							<small class="form-text text-muted">Allowed file types: PDF, JPG/JPEG</small>
 						</div>
 					</div>
 				</div>
@@ -175,7 +178,7 @@
 					>
 						Close
 					</button>
-					<button type="submit" class="btn btn-primary">Save</button>
+					<button type="submit" class="btn btn-primary" id="timetableUploadBtn">Save</button>
 				</div>
 			</form>
 		</div>
@@ -193,4 +196,32 @@
 
 		// Use above variables to manipulate the DOM
 	});
+
+	function validateFileType(input, type) {
+		const file = input.files[0];
+		const submitBtn = document.getElementById('timetableUploadBtn');
+		
+		if (!file) {
+			return;
+		}
+
+		// Check file size (max 5MB)
+		const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+		if (file.size > maxSize) {
+			alert('File size must be less than 5MB');
+			input.value = '';
+			return;
+		}
+
+		// Check file type
+		const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg'];
+		if (!allowedTypes.includes(file.type)) {
+			alert('Only PDF and JPG/JPEG files are allowed');
+			input.value = '';
+			submitBtn.disabled = true;
+			return;
+		}
+
+		submitBtn.disabled = false;
+	}
 </script>
