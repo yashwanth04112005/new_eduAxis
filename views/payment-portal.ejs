@@ -193,7 +193,13 @@
                     <form id="upiDetailsForm" onsubmit="saveUpiDetails(event)">
                         <div class="form-group">
                             <label>UPI ID</label>
-                            <input type="text" id="upiId" required>
+                            <input type="text" 
+                                   id="upiId" 
+                                   required 
+                                   pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$"
+                                   placeholder="username@upi"
+                                   oninput="validateUpiId(this)">
+                            <small class="text-muted">Example: yourname@okicici or yourname@oksbi</small>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="submit-btn">Save UPI</button>
@@ -248,17 +254,50 @@
             showFlash('success', 'Card details saved!');
         }
 
+        let savedUpiId = '';
+
+        function validateUpiId(input) {
+            const upiId = input.value.trim();
+            const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
+            
+            if (upiId && !upiRegex.test(upiId)) {
+                input.setCustomValidity('Please enter a valid UPI ID (e.g., username@bankhandle)');
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+
         function saveUpiDetails(event) {
             event.preventDefault();
-            showFlash('success', 'UPI details saved!');
+            const upiInput = document.getElementById('upiId');
+            const upiId = upiInput.value.trim();
+            
+            if (!upiId) {
+                showFlash('warning', 'Please enter a UPI ID');
+                return;
+            }
+
+            // Common UPI handles in India
+            const validHandles = ['okaxis', 'okhdfcbank', 'okicici', 'oksbi', 'ybl', 'paytm', 'gpay', 'apl', 'axl', 'ibl', 'upi'];
+            const [username, handle] = upiId.split('@');
+            
+            if (!handle || !validHandles.includes(handle.toLowerCase())) {
+                showFlash('warning', 'Please use a valid UPI handle (e.g., @okicici, @oksbi, @paytm)');
+                return;
+            }
+
+            // Save the UPI ID
+            savedUpiId = upiId;
+            showFlash('success', 'UPI details saved successfully!');
+            
+            // Collapse the UPI form
+            togglePaymentForm('upi');
         }
 
         // --- MODIFIED SCRIPT ---
         document.getElementById('placeOrderBtn').addEventListener('click', async () => {
             const button = document.getElementById('placeOrderBtn');
-            button.disabled = true;
-            button.textContent = 'Processing...';
-
+            
             // Amount is enforced by admin-set plan on the server
             const manualAmountInput = document.getElementById('amountInput');
             const amount = parseFloat((manualAmountInput.value || '0').replace(/[,\s]/g, ''));
@@ -266,12 +305,52 @@
             const selected = document.querySelector('input[name="payment"]:checked');
             const paymentMethod = selected ? selected.value : null;
 
+            // Validate payment method selection
             if (!paymentMethod) {
                 showFlash('warning', 'Please select a payment method (Card or UPI).');
-                button.disabled = false;
-                button.textContent = 'Finish Payment';
                 return;
             }
+
+            // Validate card details if card payment is selected
+            if (paymentMethod === 'card') {
+                const cardNumber = document.getElementById('cardNumber').value;
+                const expiryDate = document.getElementById('expiryDate').value;
+                const cvv = document.getElementById('cvv').value;
+
+                if (!cardNumber || !expiryDate || !cvv) {
+                    showFlash('warning', 'Please fill in all card details before proceeding.');
+                    return;
+                }
+
+                // Validate card number format (should contain only numbers and spaces)
+                if (!/^[0-9\s]{13,19}$/.test(cardNumber)) {
+                    showFlash('warning', 'Please enter a valid card number.');
+                    return;
+                }
+
+                // Validate expiry date format (MM/YY)
+                if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(expiryDate)) {
+                    showFlash('warning', 'Please enter a valid expiry date (MM/YY).');
+                    return;
+                }
+
+                // Validate CVV (3 digits)
+                if (!/^[0-9]{3}$/.test(cvv)) {
+                    showFlash('warning', 'Please enter a valid 3-digit CVV.');
+                    return;
+                }
+            }
+
+            // Validate UPI ID if UPI payment is selected
+            if (paymentMethod === 'upi') {
+                if (!savedUpiId) {
+                    showFlash('warning', 'Please save your UPI ID before proceeding with the payment.');
+                    return;
+                }
+            }
+
+            button.disabled = true;
+            button.textContent = 'Processing...';
 
             try {
                 const response = await fetch('/fees/record-payment', { // Corrected endpoint
