@@ -26,7 +26,7 @@ This **School Management System** is a comprehensive platform designed to stream
 - Progress tracking
 - Student profiles
 
-**Teacher: Teacher Module Developer:**
+**Balaji: Teacher Module Developer:**
 - Teacher dashboard features
 - Assignment creation and grading
 - Unit and class management

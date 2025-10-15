@@ -1,5 +1,6 @@
 const FeesStructure = require("../models/feesModel");
-const Payment = require("../models/paymentModel"); // 1. Import the new Payment model
+const Payment = require("../models/paymentModel");
+const FeePlan = require("../models/feePlanModel");
 const multer = require("multer");
 const fs = require("fs");
 
@@ -110,13 +111,43 @@ const fees = {
      },
 
     // --- 2. ADD NEW PAYMENT FUNCTIONS HERE ---
-    recordPayment: async (student, amount, paymentFor) => {
+    getActiveFeePlan: async () => {
         try {
+            const plan = await FeePlan.findOne({ active: true }).sort({ createdAt: -1 });
+            if (!plan) return { error: 'No active fee plan set by admin' };
+            return plan;
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
+
+    setFeePlan: async (title, amount, createdBy) => {
+        try {
+            // Deactivate existing plans
+            await FeePlan.updateMany({ active: true }, { $set: { active: false } });
+            const plan = new FeePlan({ title, amount, active: true, createdBy });
+            await plan.save();
+            return plan;
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
+
+    recordPayment: async (student, amount, paymentFor, paymentMethod) => {
+        try {
+            // Enforce admin-decided amount from active plan
+            const activePlan = await fees.getActiveFeePlan();
+            if (activePlan.error) return { error: activePlan.error };
+            const enforcedAmount = activePlan.amount;
+            const allowed = ['card','upi','other'];
+            const method = allowed.includes(paymentMethod) ? paymentMethod : null;
+            if (!method) return { error: 'Invalid payment method' };
             const newPayment = new Payment({
                 studentId: student._id,
                 studentName: student.username,
-                amount: amount,
+                amount: enforcedAmount,
                 paymentFor: paymentFor,
+                paymentMethod: method,
             });
             await newPayment.save();
             return newPayment;
@@ -125,10 +156,91 @@ const fees = {
         }
     },
 
-    getAllPayments: async () => {
+    getAllPayments: async (startDate, endDate) => {
         try {
-            // Fetch payments and sort by most recent date
-            const payments = await Payment.find({}).sort({ paymentDate: -1 });
+            const query = {};
+            if (startDate || endDate) {
+                query.paymentDate = {};
+                if (startDate) query.paymentDate.$gte = new Date(startDate);
+                if (endDate) {
+                    const d = new Date(endDate);
+                    // include entire end day
+                    d.setHours(23, 59, 59, 999);
+                    query.paymentDate.$lte = d;
+                }
+            }
+            const payments = await Payment.find(query).sort({ paymentDate: -1 });
+            return payments;
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
+
+    // Delete payment by id if owned by student
+    deleteMyPayment: async (paymentId, studentId) => {
+        try {
+            const payment = await Payment.findOne({ _id: paymentId, studentId });
+            if (!payment) return { error: 'Payment not found or not yours' };
+            await Payment.deleteOne({ _id: paymentId });
+            return { success: true };
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
+
+    // Admin delete arbitrary payment
+    deletePaymentByAdmin: async (paymentId) => {
+        try {
+            const payment = await Payment.findById(paymentId);
+            if (!payment) return { error: 'Payment not found' };
+            await Payment.deleteOne({ _id: paymentId });
+            return { success: true };
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
+
+    getPaymentsSummary: async (startDate, endDate) => {
+        try {
+            const match = {};
+            if (startDate || endDate) {
+                match.paymentDate = {};
+                if (startDate) match.paymentDate.$gte = new Date(startDate);
+                if (endDate) {
+                    const d = new Date(endDate);
+                    d.setHours(23, 59, 59, 999);
+                    match.paymentDate.$lte = d;
+                }
+            }
+            const Payment = require('../models/paymentModel');
+            const [totals, methodAgg, uniq] = await Promise.all([
+                Payment.aggregate([
+                    { $match: match },
+                    { $group: { _id: null, totalAmount: { $sum: '$amount' }, count: { $sum: 1 } } }
+                ]),
+                Payment.aggregate([
+                    { $match: match },
+                    { $group: { _id: '$paymentMethod', count: { $sum: 1 } } }
+                ]),
+                Payment.distinct('studentId', match)
+            ]);
+            const totalAmount = (totals[0] && totals[0].totalAmount) || 0;
+            const count = (totals[0] && totals[0].count) || 0;
+            const uniqueStudents = (uniq && uniq.length) || 0;
+            const methodCounts = methodAgg.reduce((acc, row) => {
+                acc[row._id || 'other'] = row.count;
+                return acc;
+            }, { card: 0, upi: 0, other: 0 });
+            return { totalAmount, count, uniqueStudents, methodCounts };
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
+
+    // Fetch payments for a particular student (by id)
+    getPaymentsForStudent: async (studentId) => {
+        try {
+            const payments = await Payment.find({ studentId }).sort({ paymentDate: -1 });
             return payments;
         } catch (error) {
             return { error: error.message };

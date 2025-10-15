@@ -226,3 +226,94 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// View submissions for teachers
+async function viewSubmissions(assignmentId) {
+    try {
+        const tableBody = document.getElementById('submissions-table-body');
+        const noData = document.getElementById('no-submissions-alert');
+        const titleSpan = document.getElementById('submissions-assignment-title');
+
+        // Reset content
+        if (tableBody) tableBody.innerHTML = '';
+        if (noData) noData.hidden = true;
+        if (titleSpan) titleSpan.textContent = 'this assignment';
+
+        // Fetch submissions
+        const res = await fetch(`/submissions/${assignmentId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || 'Failed to load submissions');
+        }
+
+        // Set assignment title if present
+        if (data && data.length > 0 && data[0].assignment && data[0].assignment.title) {
+            titleSpan.textContent = data[0].assignment.title;
+        }
+
+        if (!data || data.length === 0) {
+            if (noData) noData.hidden = false;
+        } else {
+            data.forEach(sub => {
+                const tr = document.createElement('tr');
+
+                const studentName = (sub.student && sub.student.name) ? sub.student.name : '-';
+                const studentUsername = (sub.student && sub.student.username) ? sub.student.username : '-';
+                const fileName = sub.fileName || 'Download';
+                const filePath = sub.filePath || '#';
+                const submittedAt = formatDateTime(sub.submissionDate);
+                const status = sub.status || 'submitted';
+                const grade = sub.grade || '';
+                const feedback = sub.feedback || '';
+
+                tr.innerHTML = `
+                    <td>${escapeHtml(studentName)}</td>
+                    <td class="uk-text-muted">${escapeHtml(studentUsername)}</td>
+                    <td><a href="${filePath}" target="_blank" class="uk-link-text">${escapeHtml(fileName)}</a></td>
+                    <td>${submittedAt}</td>
+                    <td>
+                        ${status === 'graded' ? `<span class="uk-label uk-label-success">Graded</span> <span class="uk-text-bold uk-margin-small-left">${escapeHtml(grade)}</span>` : '<span class="uk-label">Submitted</span>'}
+                    </td>
+                    <td class="uk-text-right">
+                        <button class="uk-button uk-button-default uk-button-small" data-grade="${escapeHtml(grade)}" data-feedback="${escapeHtml(feedback)}" onclick="openGradeFromRow(this, '${sub._id}')">Grade</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Show modal
+        UIkit.modal('#submissions-list-modal').show();
+    } catch (err) {
+        console.error('viewSubmissions error:', err);
+        UIkit.notification({ message: err.message || 'Failed to load submissions', status: 'danger' });
+    }
+}
+
+function formatDateTime(dateStr) {
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '-';
+        return d.toLocaleString();
+    } catch {
+        return '-';
+    }
+}
+
+function escapeHtml(str) {
+    if (typeof str !== 'string') return str;
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// Helper to safely open grade modal using dataset values to avoid quote escaping issues
+function openGradeFromRow(btn, submissionId) {
+    const grade = btn && btn.dataset ? btn.dataset.grade || '' : '';
+    const feedback = btn && btn.dataset ? btn.dataset.feedback || '' : '';
+    openGradeModal(submissionId, grade, feedback);
+}

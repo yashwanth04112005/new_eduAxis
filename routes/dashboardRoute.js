@@ -36,9 +36,9 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
             success: req.flash("success"),
             error: req.flash("error"),
         };
-        const fetchAdminData = async () => {
+        const fetchAdminData = async () => {
             // 1. Add 'allPayments' to the list of variables to receive data
-            const [numbers, classes, allTeachers, user, allStudents, deferments, allPayments] =
+            const [numbers, classes, allTeachers, user, allStudents, deferments, allPayments, feePlan] =
                 await Promise.all([
                     Numbers(),
                     Class.find().sort({ className: 1 }),
@@ -47,12 +47,13 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
                     Student.find(),
                     deferment.list(),
                     fees.getAllPayments(), // 2. Add the call to fetch all payments
+                    fees.getActiveFeePlan(),
                 ]);
             // 3. Add the fetched payments to the returned object, renaming it to 'payments' for the view
-            return { numbers, classes, allTeachers, user, allStudents, deferments, payments: allPayments };
+            return { numbers, classes, allTeachers, user, allStudents, deferments, payments: allPayments, feePlan: feePlan && !feePlan.error ? feePlan : null };
         };
         await countMembers();
-        const fetchStudentData = async () => {
+        const fetchStudentData = async () => {
             const studentClass = await Student.findById(userId);
             const classAssignments = await Assignment.find({
                 AsClass: studentClass.class,
@@ -63,6 +64,7 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
             const studentDeferments = await Deferment.find({
                 studentNumber: userId
             }).sort({ createdAt: -1 });
+            const myPayments = await fees.getPaymentsForStudent(userId);
             return {
                 studentClass: studentClass.class,
                 classAssignments: classAssignments,
@@ -70,6 +72,7 @@ router.get("/dashboard", thisGuy.hasAccess, async (req, res) => {
                 user: user,
                 unitData: unitData,
                 studentDeferments: studentDeferments,
+                myPayments: myPayments,
             };
         };
         const fetchTeacherData = async () => {
