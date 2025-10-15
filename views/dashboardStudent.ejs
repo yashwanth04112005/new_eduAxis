@@ -911,7 +911,7 @@
 									uk-grid
 								>
 									<!-- The Unit List -->
-									<% unitData.forEach(unit=> { %>
+									<% (Array.isArray(unitData) ? unitData : []).forEach(function(unit){ if (!unit || !unit._id) { return; } %>
 									<form action="/units" method="post">
 										<input
 											type="hidden"
@@ -938,7 +938,7 @@
 																	>
 																		🟢
 																	</span>
-																	<%= unit.unitCode %>
+																	<%= unit.unitCode || '' %>
 																</span>
 															</div>
 
@@ -964,7 +964,7 @@
 																<span
 																	data-uk-icon="icon:clock; ratio: 0.8"
 																></span>
-																<%=formatDate( unit.createdAt)%>
+																<%= unit.createdAt ? formatDate(unit.createdAt) : '' %>
 															</div>
 														</div>
 													</div>
@@ -974,13 +974,13 @@
 														<h6
 															class="uk-margin-small-bottom uk-margin-remove-adjacent uk-text-bold"
 														>
-															<%= unit.unitName%>
+															<%= unit.unitName || '' %>
 														</h6>
 														<p class="uk-text-small uk-text-muted">
 															Unit Description
 														</p>
 														<p class="uk-text-small uk-text-muted">
-															Created : <%= formatDate(unit.createdAt) %>
+															Created : <%= unit.createdAt ? formatDate(unit.createdAt) : '' %>
 														</p>
 													</div>
 													<div class="uk-card-footer">
@@ -994,7 +994,7 @@
 																data-uk-tooltip
 															>
 																<span class="fw-bold">Lec: </span> <%=
-																unit.creatorName %>
+																unit.creatorName || '' %>
 															</div>
 
 															<!-- <div class="uk-width-auto uk-text-right">
