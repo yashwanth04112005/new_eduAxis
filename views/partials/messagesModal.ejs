@@ -28,41 +28,9 @@
 			<div class="modal-body">
 				<div class="container-fluid" id="messagesContainer">
 					<!-- Messages will be dynamically loaded here -->
-					<% if (user.messages && user.messages.length > 0) { %>
-						<% user.messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(message=>{ %>
-						<div class="nature-card" data-message-id="<%= message._id || message.id %>" data-read="<%= message.read %>">
-							<div class="uk-card uk-card-small uk-card-default">
-								<div class="uk-card-header">
-									<div class="uk-grid uk-grid-small uk-text-small" data-uk-grid>
-										<div class="uk-width-expand" title="Alert" data-uk-tooltip>
-											<span class="cat-txt">Alert</span>
-										</div>
-										<div class="uk-width-auto uk-text-right uk-text-muted" title="Status" data-uk-tooltip>
-											<% if (!message.read) { %>
-											<span class="uk-text-danger">🔴</span> New
-											<% } else { %>
-											<span class="uk-text-success">🟢</span> Read
-											<% } %>
-										</div>
-									</div>
-								</div>
-								<div class="uk-card-media"></div>
-								<div class="uk-card-body">
-									<h6 class="uk-margin-small-bottom uk-margin-remove-adjacent uk-text-bold">
-										<%= message.title %>
-									</h6>
-									<p class="uk-text-small uk-text-muted">
-										<%= formatDate(message.createdAt) %> at <%= new Date(message.createdAt).toLocaleTimeString() %>
-									</p>
-								</div>
-							</div>
-						</div>
-						<% }) %>
-					<% } else { %>
-						<div class="uk-text-center uk-text-muted uk-padding">
-							<p>No messages available</p>
-						</div>
-					<% } %>
+					<div class="uk-text-center uk-text-muted uk-padding" id="noMessagesPlaceholder">
+						<p>Loading messages...</p>
+					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -99,6 +67,20 @@
 
 	var messagesModal = document.getElementById("messagesModal");
 
+	// Pass server messages data to the MessageManager
+	window.serverMessages = [
+		<% if (user.messages && user.messages.length > 0) { %>
+			<% user.messages.forEach((message, index) => { %>
+				{
+					id: '<%= message._id || message.id %>',
+					title: '<%= message.title %>',
+					read: <%= message.read %>,
+					createdAt: '<%= message.createdAt %>'
+				}<%= index < user.messages.length - 1 ? ',' : '' %>
+			<% }); %>
+		<% } %>
+	];
+
 	messagesModal.addEventListener("show.bs.modal", function (event) {
 		// Button that triggered the modal
 		let button = event.relatedTarget;
@@ -131,21 +113,24 @@
 
 	function deleteAllMessages() {
 		if (window.MessageManager) {
-			// Show confirmation dialog
-			if (confirm('Are you sure you want to delete all messages?')) {
-				window.MessageManager.clearAll();
-				
-				// Send request to server to delete messages (optional - for persistence)
-				const userId = '<%= user._id %>';
-				const userType = '<%= theUserType %>';
-				
-				fetch(`/${userType}/messages/delete/${userId}`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					}
-				}).catch(error => console.log('Delete messages request failed:', error));
-			}
+			window.MessageManager.clearAll();
+			
+			// Send request to server to delete messages (optional - for persistence)
+			const userId = '<%= user._id %>';
+			const userType = '<%= theUserType %>';
+			
+			fetch(`/${userType}/messages/delete/${userId}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				}
+			}).then(response => {
+				if (response.ok) {
+					console.log('All messages deleted from server');
+				}
+			}).catch(error => {
+				console.log('Delete all messages request failed:', error);
+			});
 		}
 	}
 

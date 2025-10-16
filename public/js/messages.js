@@ -20,8 +20,8 @@ class MessageManager {
         this.messagesContainer = document.querySelector('#messagesModal .container-fluid');
         
         if (this.messagesContainer) {
-            // Store initial messages for reference
-            this.initialMessages = Array.from(this.messagesContainer.querySelectorAll('.nature-card'));
+            // Initialize with server data if available
+            this.initializeFromServerData();
             
             // Add event listeners for dynamic updates
             this.setupEventListeners();
@@ -29,6 +29,30 @@ class MessageManager {
             // Set up periodic refresh (optional)
             this.startPeriodicRefresh();
         }
+    }
+
+    initializeFromServerData() {
+        // Check if there's server data available in the page
+        const serverMessages = window.serverMessages || [];
+        
+        if (serverMessages.length > 0) {
+            // Clear loading placeholder
+            this.messagesContainer.innerHTML = '';
+            
+            // Sort messages by creation date (newest first)
+            const sortedMessages = serverMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            // Add each message dynamically
+            sortedMessages.forEach(messageData => {
+                const messageElement = this.createMessageElement(messageData);
+                this.messagesContainer.appendChild(messageElement);
+            });
+        } else {
+            // Show no messages placeholder
+            this.messagesContainer.innerHTML = '<div class="uk-text-center uk-text-muted uk-padding"><p>No messages available</p></div>';
+        }
+        
+        this.updateMessageCount();
     }
 
     setupEventListeners() {
@@ -81,7 +105,7 @@ class MessageManager {
         const dateString = this.formatDate(messageData.createdAt || Date.now());
 
         const messageHTML = `
-            <div class="nature-card" id="${messageId}" data-message-id="${messageData.id || messageId}">
+            <div class="nature-card" id="${messageId}" data-message-id="${messageData.id || messageId}" data-read="${messageData.read || false}">
                 <div class="uk-card uk-card-small uk-card-default">
                     <div class="uk-card-header">
                         <div class="uk-grid uk-grid-small uk-text-small" data-uk-grid>
@@ -91,6 +115,16 @@ class MessageManager {
                             <div class="uk-width-auto uk-text-right uk-text-muted" title="Status" data-uk-tooltip>
                                 <span class="${statusClass}">${statusIcon}</span>
                                 ${statusText}
+                            </div>
+                            <div class="uk-width-auto uk-text-right">
+                                <button 
+                                    type="button" 
+                                    class="uk-icon-link uk-text-danger" 
+                                    title="Delete Message" 
+                                    data-uk-tooltip
+                                    data-uk-icon="icon: trash"
+                                    onclick="window.messageManager.deleteMessage('${messageData.id || messageId}')"
+                                ></button>
                             </div>
                         </div>
                     </div>
@@ -176,6 +210,25 @@ class MessageManager {
         this.updateMessageCount();
     }
 
+    deleteMessage(messageId) {
+        const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+        if (messageElement) {
+            // Add delete animation class
+            messageElement.classList.add('message-delete-animation');
+            
+            setTimeout(() => {
+                messageElement.remove();
+                this.updateMessageCount();
+                
+                // Check if no messages left
+                const remainingMessages = this.messagesContainer.querySelectorAll('.nature-card');
+                if (remainingMessages.length === 0) {
+                    this.messagesContainer.innerHTML = '<div class="uk-text-center uk-text-muted uk-padding"><p>No messages available</p></div>';
+                }
+            }, 300);
+        }
+    }
+
     clearAllMessages() {
         this.messagesContainer.innerHTML = '<div class="uk-text-center uk-text-muted uk-padding"><p>No messages available</p></div>';
         this.updateMessageCount();
@@ -225,15 +278,8 @@ class MessageManager {
     }
 
     animateNewMessage(messageElement) {
-        // Add animation for new messages
-        messageElement.style.opacity = '0';
-        messageElement.style.transform = 'translateY(-20px)';
-        
-        setTimeout(() => {
-            messageElement.style.transition = 'all 0.3s ease-in-out';
-            messageElement.style.opacity = '1';
-            messageElement.style.transform = 'translateY(0)';
-        }, 100);
+        // Add fade-in animation class
+        messageElement.classList.add('message-fade-in');
 
         // Add a subtle highlight effect
         messageElement.classList.add('new-message-highlight');
@@ -287,12 +333,18 @@ class MessageManager {
             window.messageManager.clearAllMessages();
         }
     }
+
+    static deleteMessage(messageId) {
+        if (window.messageManager) {
+            window.messageManager.deleteMessage(messageId);
+        }
+    }
 }
 
 // Initialize the message manager
 window.messageManager = new MessageManager();
 
-// Add CSS for animations
+// Add CSS for animations and enhanced styling
 const style = document.createElement('style');
 style.textContent = `
     .new-message-highlight {
@@ -303,6 +355,7 @@ style.textContent = `
     
     .nature-card {
         transition: all 0.3s ease-in-out;
+        position: relative;
     }
     
     .uk-card {
@@ -312,6 +365,53 @@ style.textContent = `
     .uk-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .uk-icon-link.uk-text-danger:hover {
+        color: #dc3545 !important;
+        transform: scale(1.1);
+    }
+    
+    .uk-icon-link.uk-text-danger {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .message-delete-animation {
+        animation: slideOutLeft 0.3s ease-in-out forwards;
+    }
+    
+    @keyframes slideOutLeft {
+        0% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        100% {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+    }
+    
+    .message-fade-in {
+        animation: fadeInUp 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .uk-card-header .uk-grid {
+        align-items: center;
+    }
+    
+    .uk-card-header .uk-width-auto:last-child {
+        margin-left: auto;
     }
 `;
 document.head.appendChild(style);
