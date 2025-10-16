@@ -625,8 +625,14 @@
 										name="reason"
 										id="reason"
 										placeholder=""
+										required
+										pattern="^[A-Za-z\s]{2,}$"
+										title="Comment must be at least 2 characters long and contain only letters and spaces"
 									/>
 									<label for="reason">Comment</label>
+									<div class="invalid-feedback">
+										Comment must be at least 2 characters long and contain only letters and spaces
+									</div>
 								</div>
 							</div>
 						</div>
@@ -665,16 +671,68 @@
 			if (!form) return;
 			form.addEventListener('submit', async function(e){
 				e.preventDefault();
-				const reason = (form.querySelector('input[name="reason"]')?.value || '').trim();
+				const reasonInput = form.querySelector('input[name="reason"]');
+				const reason = (reasonInput?.value || '').trim();
+
+				// Validate comment
 				if (!reason) {
 					return Swal && Swal.fire ? Swal.fire({ title: 'Reason required', icon: 'warning' }) : alert('Reason required');
 				}
+
+				// Validate pattern
+				if (!/^[A-Za-z\s]{2,}$/.test(reason)) {
+					reasonInput.classList.add('is-invalid');
+					return Swal && Swal.fire ? 
+						Swal.fire({ 
+							title: 'Invalid comment', 
+							text: 'Comment must be at least 2 characters long and contain only letters and spaces',
+							icon: 'warning' 
+						}) : 
+						alert('Comment must be at least 2 characters long and contain only letters and spaces');
+				}
+
 				try {
-					const res = await fetch('/deferment/save', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ reason }) });
+					const res = await fetch('/deferment/save', { 
+						method: 'POST', 
+						headers: { 
+							'Content-Type': 'application/json', 
+							'Accept': 'application/json' 
+						}, 
+						body: JSON.stringify({ reason }) 
+					});
 					const data = await res.json().catch(()=>({}));
 					if (!res.ok) throw new Error(data && data.message ? data.message : 'Failed to submit');
+					
+					// On success:
 					form.reset();
-					try { bootstrap.Modal.getInstance(document.getElementById('defermentModal'))?.hide(); } catch {}
+					try { 
+						// Hide the modal
+						bootstrap.Modal.getInstance(document.getElementById('defermentModal'))?.hide();
+						
+						// Show success message using SweetAlert
+						Swal.fire({
+							title: 'Success',
+							text: 'Leave request submitted successfully',
+							icon: 'success',
+							timer: 1500,
+							showConfirmButton: false
+						});
+
+						// Add a message using messageManager
+						if (window.messageManager) {
+							const messageData = {
+								title: 'Leave Request Submitted',
+								message: reason,
+								read: false,
+								createdAt: new Date(),
+								id: `leave-${Date.now()}`
+							};
+							window.messageManager.addMessage(messageData);
+						}
+					} catch {}
+					// Clear any validation states
+					reasonInput.classList.remove('is-invalid');
+					reasonInput.classList.remove('is-valid');
 					// Optimistically add to "Leave Requests" modal list
 					const listGroup = document.querySelector('#defermentRequestModal .list-group');
 					if (listGroup) {

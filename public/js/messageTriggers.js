@@ -67,23 +67,8 @@ function setupEnrollmentTriggers() {
 }
 
 function setupLeaveRequestTriggers() {
-    // Listen for leave request forms
-    const leaveForms = document.querySelectorAll('form[action*="deferment"]');
-    leaveForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const reasonInput = form.querySelector('input[name="reason"], textarea[name="reason"]');
-            const reason = reasonInput ? reasonInput.value : 'Leave request';
-            
-            setTimeout(() => {
-                if (window.MessageManager) {
-                    window.MessageManager.addSystemMessage(
-                        `Leave request submitted: ${reason}`,
-                        'warning'
-                    );
-                }
-            }, 1000);
-        });
-    });
+    // Leave request notifications are handled by the form submission
+    // No additional triggers needed
 }
 
 function setupFormTriggers() {

@@ -13,17 +13,24 @@ router
 			req.user._id,
 			reason
 		);
-		const wantsJson = (req.headers['content-type'] || '').includes('application/json') || (req.headers['accept'] || '').includes('application/json');
+		
+		// Check if it's an AJAX request
+		const isAjax = req.xhr || req.headers.accept.includes('application/json') || req.headers['content-type']?.includes('application/json');
+		
 		if (!savedDefermentRequest.error) {
-			if (wantsJson) {
+			if (isAjax) {
+				// For AJAX requests, just return success
 				return res.status(200).json({ success: true });
+			} else {
+				// For regular form submissions, use flash message
+				req.flash("info", "Leave Request Sent Successfully!");
 			}
-			req.flash("info", "Leave Request Sent Successfully!");
 		} else {
-			if (wantsJson) {
+			if (isAjax) {
 				return res.status(400).json({ success: false, message: savedDefermentRequest.error });
+			} else {
+				req.flash("info", savedDefermentRequest.error);
 			}
-			req.flash("info", savedDefermentRequest.error);
 		}
 		res.redirect("/dashboard");
 	})

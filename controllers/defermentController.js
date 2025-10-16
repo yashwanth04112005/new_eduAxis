@@ -12,12 +12,8 @@ const deferment = {
 			const savedDeferment = await newDeferment.save();
 
 			if (!savedDeferment.error) {
-				const savedMessage = await messages.save(
-					Student,
-					"Leave Request Sent Successfully. Please wait for confirmation.",
-					studentId
-				);
-				return true;
+				// For AJAX requests, just return success
+				return { success: true };
 			} else {
 				throw new Error(savedDeferment.error);
 			}

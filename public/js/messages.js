@@ -88,10 +88,25 @@ class MessageManager {
     }
 
     addMessage(messageData) {
-        const messageElement = this.createMessageElement(messageData);
+        // Ensure proper message structure
+        const formattedMessage = {
+            ...messageData,
+            type: messageData.type || 'info',
+            read: false,
+            createdAt: messageData.createdAt || new Date()
+        };
+
+        const messageElement = this.createMessageElement(formattedMessage);
         this.messagesContainer.insertBefore(messageElement, this.messagesContainer.firstChild);
         this.updateMessageCount();
         this.animateNewMessage(messageElement);
+
+        // Update badge count
+        const badge = document.querySelector('.badge');
+        if (badge) {
+            const currentCount = parseInt(badge.textContent) || 0;
+            badge.textContent = currentCount + 1;
+        }
     }
 
     createMessageElement(messageData) {
