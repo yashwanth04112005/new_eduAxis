@@ -212,21 +212,44 @@ class MessageManager {
 
     deleteMessage(messageId) {
         const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-        if (messageElement) {
-            // Add delete animation class
-            messageElement.classList.add('message-delete-animation');
-            
-            setTimeout(() => {
-                messageElement.remove();
-                this.updateMessageCount();
-                
-                // Check if no messages left
-                const remainingMessages = this.messagesContainer.querySelectorAll('.nature-card');
-                if (remainingMessages.length === 0) {
-                    this.messagesContainer.innerHTML = '<div class="uk-text-center uk-text-muted uk-padding"><p>No messages available</p></div>';
-                }
-            }, 300);
+        if (!messageElement) return;
+
+        // Add delete animation class
+        messageElement.classList.add('message-delete-animation');
+
+        // Persist to server if possible
+        try {
+            const modal = document.getElementById('messagesModal');
+            const userId = modal?.dataset.userId;
+            const userType = modal?.dataset.userType;
+            if (userId && userType) {
+                fetch(`/${userType}/messages/delete/${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ messageId })
+                }).then(res => {
+                    if (!res.ok) throw new Error('Server did not delete');
+                }).catch(err => {
+                    console.warn('Server delete failed, reverting UI:', err);
+                    messageElement.classList.remove('message-delete-animation');
+                    return; // Stop the UI removal
+                });
+            }
+        } catch (e) {
+            console.warn('Error issuing delete request', e);
         }
+
+        setTimeout(() => {
+            messageElement.remove();
+            this.updateMessageCount();
+
+            // Check if no messages left
+            const remainingMessages = this.messagesContainer.querySelectorAll('.nature-card');
+            if (remainingMessages.length === 0) {
+                this.messagesContainer.innerHTML = '<div class="uk-text-center uk-text-muted uk-padding"><p>No messages available</p></div>';
+            }
+        }, 300);
     }
 
     clearAllMessages() {

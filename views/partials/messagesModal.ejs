@@ -7,6 +7,8 @@
 	role="dialog"
 	aria-labelledby="modalTitleId"
 	aria-hidden="true"
+	data-user-id="<%= user && user._id ? user._id : '' %>"
+	data-user-type="<%= typeof theUserType !== 'undefined' ? theUserType : '' %>"
 >
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -59,6 +61,16 @@
 	</div>
 </div>
 
+<!-- Server messages as JSON to avoid JS/EJS mixing issues -->
+<script id="serverMessagesJSON" type="application/json"><%- JSON.stringify((user && user.messages ? user.messages : []).map(function(m){
+	return {
+		id: (m && (m._id || m.id)) || '',
+		title: (m && (m.title || m.message)) || '',
+		read: !!(m && m.read),
+		createdAt: (m && m.createdAt) || new Date().toISOString()
+	};
+})) %></script>
+
 <script>
 	// Include the messages.js script
 	const messagesScript = document.createElement('script');
@@ -67,19 +79,16 @@
 
 	var messagesModal = document.getElementById("messagesModal");
 
-	// Pass server messages data to the MessageManager
-	window.serverMessages = [
-		<% if (user.messages && user.messages.length > 0) { %>
-			<% user.messages.forEach((message, index) => { %>
-				{
-					id: '<%= message._id || message.id %>',
-					title: '<%= message.title %>',
-					read: <%= message.read %>,
-					createdAt: '<%= message.createdAt %>'
-				}<%= index < user.messages.length - 1 ? ',' : '' %>
-			<% }); %>
-		<% } %>
-	];
+	// Read server messages from JSON script tag
+	(function(){
+		try {
+			const el = document.getElementById('serverMessagesJSON');
+			window.serverMessages = el ? JSON.parse(el.textContent || '[]') : [];
+		} catch (e) {
+			console.warn('Failed to parse server messages JSON', e);
+			window.serverMessages = [];
+		}
+	})();
 
 	messagesModal.addEventListener("show.bs.modal", function (event) {
 		// Button that triggered the modal
@@ -99,14 +108,15 @@
 			window.MessageManager.markAllAsRead();
 			
 			// Send request to server to mark as read (optional - for persistence)
-			const userId = '<%= user._id %>';
-			const userType = '<%= theUserType %>';
+			const userId = messagesModal?.dataset.userId;
+			const userType = messagesModal?.dataset.userType;
 			
 			fetch(`/${userType}/messages/markasread/${userId}`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				}
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'same-origin'
+			}).then(res => {
+				if (!res.ok) console.warn('Mark as read not acknowledged');
 			}).catch(error => console.log('Mark as read request failed:', error));
 		}
 	}
@@ -116,14 +126,13 @@
 			window.MessageManager.clearAll();
 			
 			// Send request to server to delete messages (optional - for persistence)
-			const userId = '<%= user._id %>';
-			const userType = '<%= theUserType %>';
+			const userId = messagesModal?.dataset.userId;
+			const userType = messagesModal?.dataset.userType;
 			
 			fetch(`/${userType}/messages/delete/${userId}`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				}
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'same-origin'
 			}).then(response => {
 				if (response.ok) {
 					console.log('All messages deleted from server');
@@ -135,8 +144,8 @@
 	}
 
 	function deleteMessage(messageId) {
-		const userId = '<%= user._id %>';
-		const userType = '<%= theUserType %>';
+	const userId = messagesModal?.dataset.userId;
+	const userType = messagesModal?.dataset.userType;
 		const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
 
 		if (messageElement) {
@@ -153,9 +162,8 @@
 			// Delete message from server
 			fetch(`/${userType}/messages/delete/${userId}`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'same-origin',
 				body: JSON.stringify({ messageId })
 			})
 			.then(response => {

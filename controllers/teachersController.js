@@ -45,11 +45,10 @@ const teacher = {
 	deleteMessages: async (teacherId) => {
 		try {
 			const deletedMessages = await messages.deleteAll(Teacher, teacherId);
-			if (!deletedMessages.error) {
+			if (deletedMessages && !deletedMessages.error) {
 				return true;
-			} else {
-				throw new Error("Messages Not Deleted!");
 			}
+			throw new Error(deletedMessages?.error || "Messages Not Deleted!");
 		} catch (error) {
 			return { error: error.message };
 		}
