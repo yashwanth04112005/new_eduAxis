@@ -116,7 +116,6 @@ class MessageManager {
                                 <span class="${statusClass}">${statusIcon}</span>
                                 ${statusText}
                             </div>
-<<<<<<< HEAD
                             <div class="uk-width-auto uk-text-right">
                                 <button 
                                     type="button" 
@@ -125,15 +124,6 @@ class MessageManager {
                                     data-uk-tooltip
                                     data-uk-icon="icon: trash"
                                     onclick="window.messageManager.deleteMessage('${messageData.id || messageId}')"
-=======
-                            <div class="uk-width-auto">
-                                <button 
-                                    class="uk-icon-button" 
-                                    uk-icon="trash"
-                                    onclick="deleteMessage('${messageData.id || messageId}')"
-                                    title="Delete message"
-                                    style="color: #dc3545;"
->>>>>>> ab3981dab5c017fbf32acf59e5de468edccc424b
                                 ></button>
                             </div>
                         </div>
