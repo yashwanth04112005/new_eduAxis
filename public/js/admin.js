@@ -228,6 +228,57 @@ function confirmClassDelete(id) {
 	});
 })();
 
+// ---- Deferments: Reject via Fetch (no reload) ----
+(function setupDefermentRejectAjax(){
+	document.addEventListener('click', async function(e){
+		const link = e.target.closest('[data-deferment-reject]');
+		if (!link) return;
+		e.preventDefault();
+		const id = link.getAttribute('data-deferment-reject');
+		const confirm = await Swal.fire({ title: 'Reject this leave request?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33' });
+		if (!confirm.isConfirmed) return;
+		try {
+			const res = await fetch(`/deferment/reject/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+			const data = await res.json().catch(()=>({}));
+			if (!res.ok) throw new Error(data && data.message ? data.message : 'Failed to reject');
+			// Remove the card from DOM
+			const card = link.closest('.uk-card');
+			const wrapper = card ? card.closest('.nature-card, .photo-card, .music-card') : null;
+			if (wrapper) wrapper.remove();
+			Swal.fire({ title: 'Rejected', icon: 'success', timer: 1200, showConfirmButton: false });
+		} catch (err) {
+			Swal.fire({ title: 'Error', text: String(err.message || err), icon: 'error' });
+		}
+	});
+})();
+
+// ---- Deferments: Approve via Fetch (no reload) ----
+(function setupDefermentApproveAjax(){
+	document.addEventListener('click', async function(e){
+		const link = e.target.closest('[data-deferment-approve]');
+		if (!link) return;
+		e.preventDefault();
+		const id = link.getAttribute('data-deferment-approve');
+		try {
+			const res = await fetch(`/deferment/approve/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+			const data = await res.json().catch(()=>({}));
+			if (!res.ok) throw new Error(data && data.message ? data.message : 'Failed to approve');
+			// Toggle card to Approved (no deletion)
+			const card = link.closest('.uk-card');
+			const wrapper = card ? card.closest('.nature-card, .photo-card, .music-card') : null;
+			if (wrapper) {
+				wrapper.classList.remove('photo-card');
+				wrapper.classList.add('music-card');
+				const statusSpan = wrapper.querySelector('.cat-txt');
+				if (statusSpan) statusSpan.textContent = 'Approved';
+			}
+			Swal.fire({ title: 'Approved', icon: 'success', timer: 1200, showConfirmButton: false });
+		} catch (err) {
+			Swal.fire({ title: 'Error', text: String(err.message || err), icon: 'error' });
+		}
+	});
+})();
+
 // ---- Classes: Create via Fetch (no reload) ----
 (function setupClassCreateAjax() {
 	const classModalForm = document.querySelector('#modal-center1 form[action="/classes"]');
