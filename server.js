@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 require("dotenv").config();
 const port = process.env.PORT || 3000;
 // CREATING SESSION
-app.use(
+app.use( 	
 	session({
 		name: "ea.sid",
 		secret: process.env.SESSION_SECRET,

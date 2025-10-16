@@ -314,6 +314,7 @@
 									title="Title cannot be only numbers"
 								/>
 								<small class="form-text text-muted">Letters or letters+numbers are allowed. Numbers-only titles are not allowed.</small>
+								<span id="titleNumericError" class="text-danger d-none">Title cannot be only numbers</span>
 							</div>
 							<div class="mb-3">
 								<label for="eventDescription" class="form-label"
@@ -1287,5 +1288,73 @@
 			input.addEventListener('input', () => validatePassword(input));
 		});
 		</script>
+		<script>
+(function(){
+  function todayYMD(){
+    const d=new Date();const m=("0"+(d.getMonth()+1)).slice(-2);const day=("0"+d.getDate()).slice(-2);return d.getFullYear()+"-"+m+"-"+day;
+  }
+  const form=document.querySelector('#modal-center form[action="/events"]');
+  if(!form)return;
+  const titleInput=form.querySelector('#title');
+  const descInput=form.querySelector('#eventDescription');
+  const dateInput=form.querySelector('#eventDate');
+  const authorInput=form.querySelector('input[name="author"]');
+  const publishedInput=form.querySelector('input[name="published"]');
+	const titleError=form.querySelector('#titleNumericError');
+  if(dateInput)dateInput.min=todayYMD();
+	function validateTitle(){
+		const t=(titleInput.value||'').trim().replace(/\s+/g,'');
+		const onlyNums=/^\d+$/.test(t);
+		titleInput.setCustomValidity(onlyNums?'Title cannot be only numbers':'');
+		if(titleError){
+			if(onlyNums){
+				titleError.classList.remove('d-none');
+				titleInput.classList.add('is-invalid');
+			}else{
+				titleError.classList.add('d-none');
+				titleInput.classList.remove('is-invalid');
+			}
+		}
+		return !onlyNums;
+	}
+  function validateDate(){
+    const v=dateInput.value;
+    if(!v){dateInput.setCustomValidity('Event date is required');return false;}
+    const today=new Date();today.setHours(0,0,0,0);
+    const d=new Date(v);d.setHours(0,0,0,0);
+    const ok=d>=today;
+    dateInput.setCustomValidity(ok?'':'Event date must be today or a future date');
+    return ok;
+  }
+  titleInput&&titleInput.addEventListener('input',validateTitle);
+  dateInput&&dateInput.addEventListener('input',validateDate);
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    const vt=validateTitle();
+    const vd=validateDate();
+    if(!form.reportValidity()||!vt||!vd)return;
+    const payload={
+      title:(titleInput.value||'').trim(),
+      description:(descInput.value||'').trim(),
+      eventDate:dateInput.value,
+      author:authorInput?authorInput.value:'Admin',
+      published:publishedInput?publishedInput.value:'Today'
+    };
+    try{
+      const res=await fetch('/events',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(payload)});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error((data&&data.message)||'Failed to publish event');
+      if(typeof getEvents==='function')await getEvents();
+      form.reset();
+      if(dateInput)dateInput.min=todayYMD();
+      try{ if(window.UIkit&&UIkit.modal) UIkit.modal('#modal-center').hide(); }catch(_){}
+      try{ if(window.bootstrap) bootstrap.Modal.getInstance(document.getElementById('modal-center'))?.hide(); }catch(_){}
+      if(window.Swal) Swal.fire({title:'Published',icon:'success',timer:1200,showConfirmButton:false});
+    }catch(err){
+      if(window.Swal) Swal.fire({title:'Error',text:String(err.message||err),icon:'error'});
+    }
+  });
+})();
+</script>
 	</body>
 </html>
