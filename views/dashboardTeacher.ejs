@@ -320,7 +320,7 @@
 		>
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
-					<form action="/unit" method="post">
+					<form action="/unit" method="post" id="createUnitForm">
 						<div class="modal-header">
 							<h5 class="modal-title" id="modalTitleId">Add Unit</h5>
 							<button
@@ -340,8 +340,13 @@
 										id="unitName"
 										placeholder=""
 										required
+										pattern="[A-Za-z\s]+"
+										title="Only letters and spaces are allowed"
 									/>
 									<label for="unitName">Unit Name</label>
+									<div class="invalid-feedback">
+										Unit name can only contain letters and spaces
+									</div>
 								</div>
 								<div class="form-floating mb-3">
 									<input
@@ -351,8 +356,13 @@
 										id="unitCode"
 										placeholder=""
 										required
+										pattern="[A-Za-z0-9]+"
+										title="Only letters and numbers are allowed"
 									/>
 									<label for="unitCode">Unit Code</label>
+									<div class="invalid-feedback">
+										Unit code can only contain letters and numbers
+									</div>
 								</div>
 								<div class="form-floating mb-3">
 									<input
@@ -966,6 +976,7 @@
 		<!-- Dynamic Messages System -->
 		<script src="js/messages.js"></script>
 		<script src="js/messageTriggers.js"></script>
+		<script src="js/unit-form.js"></script>
 		<script>
 		  document.addEventListener('change', function(e){
 		    if(e.target && e.target.id === 'unitSelect'){
