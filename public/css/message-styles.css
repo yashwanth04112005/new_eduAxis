@@ -1,0 +1,29 @@
+.nature-card .uk-card {
+    border-top-color: #1e87f0;
+    margin-bottom: 15px;
+}
+
+.nature-card .uk-card .cat-txt {
+    color: #1e87f0;
+}
+
+.message-header-text {
+    color: #1e87f0;
+}
+
+.message-status {
+    font-weight: 500;
+}
+
+.message-status.unread {
+    color: #f0506e;
+}
+
+.message-status.read {
+    color: #32d296;
+}
+
+.message-title {
+    color: #333;
+    font-size: 1rem;
+}

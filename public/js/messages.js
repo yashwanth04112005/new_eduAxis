@@ -99,7 +99,7 @@ class MessageManager {
         const isNew = !messageData.read;
         const statusIcon = isNew ? '🔴' : '🟢';
         const statusText = isNew ? 'New' : 'Read';
-        const statusClass = isNew ? 'uk-text-danger' : 'uk-text-success';
+        const statusClass = isNew ? 'message-status unread' : 'message-status read';
         
         const timeString = new Date(messageData.createdAt || Date.now()).toLocaleTimeString();
         const dateString = this.formatDate(messageData.createdAt || Date.now());
@@ -110,11 +110,13 @@ class MessageManager {
                     <div class="uk-card-header">
                         <div class="uk-grid uk-grid-small uk-text-small" data-uk-grid>
                             <div class="uk-width-expand" title="Alert" data-uk-tooltip>
-                                <span class="cat-txt">Alert</span>
+                                <span class="cat-txt message-header-text">Alert</span>
                             </div>
-                            <div class="uk-width-auto uk-text-right uk-text-muted" title="Status" data-uk-tooltip>
-                                <span class="${statusClass}">${statusIcon}</span>
-                                ${statusText}
+                            <div class="uk-width-auto uk-text-right" title="Status" data-uk-tooltip>
+                                <span class="${statusClass}">
+                                    <span class="status-icon">${statusIcon}</span>
+                                    ${statusText}
+                                </span>
                             </div>
                             <div class="uk-width-auto uk-text-right">
                                 <button 
@@ -130,7 +132,7 @@ class MessageManager {
                     </div>
                     <div class="uk-card-media"></div>
                     <div class="uk-card-body">
-                        <h6 class="uk-margin-small-bottom uk-margin-remove-adjacent uk-text-bold">
+                        <h6 class="uk-margin-small-bottom uk-margin-remove-adjacent uk-text-bold message-title">
                             ${messageData.title || messageData.message}
                         </h6>
                         <p class="uk-text-small uk-text-muted">
@@ -181,13 +183,11 @@ class MessageManager {
     markMessageAsRead(messageId) {
         const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
         if (messageElement) {
-            const statusSpan = messageElement.querySelector('.uk-width-auto span');
-            const statusText = messageElement.querySelector('.uk-width-auto');
+            const statusSpan = messageElement.querySelector('.message-status');
             
-            if (statusSpan && statusText) {
-                statusSpan.textContent = '🟢';
-                statusSpan.className = 'uk-text-success';
-                statusText.innerHTML = '<span class="uk-text-success">🟢</span> Read';
+            if (statusSpan) {
+                statusSpan.className = 'message-status read';
+                statusSpan.innerHTML = '<span class="status-icon">🟢</span> Read';
                 messageElement.dataset.read = 'true';
             }
         }
