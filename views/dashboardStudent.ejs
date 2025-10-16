@@ -595,7 +595,7 @@
 		>
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
-					<form action="/deferment/save" method="post">
+									<form action="/deferment/save" method="post" data-student-deferment>
 						<div class="modal-header">
 							<h5 class="modal-title" id="modalTitleId">Apply Leave</h5>
 							<button
@@ -638,7 +638,7 @@
 							>
 								Close
 							</button>
-							<button type="submit" class="btn btn-primary">
+										<button type="submit" class="btn btn-primary">
 								Send Request
 							</button>
 						</div>
@@ -658,6 +658,45 @@
 
 				// Use above variables to manipulate the DOM
 			});
+		</script>
+		<script>
+		(function(){
+			const form = document.querySelector('form[data-student-deferment]');
+			if (!form) return;
+			form.addEventListener('submit', async function(e){
+				e.preventDefault();
+				const reason = (form.querySelector('input[name="reason"]')?.value || '').trim();
+				if (!reason) {
+					return Swal && Swal.fire ? Swal.fire({ title: 'Reason required', icon: 'warning' }) : alert('Reason required');
+				}
+				try {
+					const res = await fetch('/deferment/save', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ reason }) });
+					const data = await res.json().catch(()=>({}));
+					if (!res.ok) throw new Error(data && data.message ? data.message : 'Failed to submit');
+					form.reset();
+					try { bootstrap.Modal.getInstance(document.getElementById('defermentModal'))?.hide(); } catch {}
+					// Optimistically add to "Leave Requests" modal list
+					const listGroup = document.querySelector('#defermentRequestModal .list-group');
+					if (listGroup) {
+						const item = document.createElement('div');
+						item.className = 'list-group-item mb-2';
+						const now = new Date();
+						item.innerHTML = `
+							<div class="d-flex w-100 justify-content-between">
+								<h6 class="mb-1"><span class="badge bg-warning text-dark">Pending</span></h6>
+								<small class="text-muted">${now.toLocaleDateString()}</small>
+							</div>
+							<p class="mb-1"><strong>Reason:</strong> ${reason}</p>
+							<small class="text-muted">Submitted by: You</small>
+						`;
+						listGroup.prepend(item);
+					}
+					Swal && Swal.fire ? Swal.fire({ title: 'Request sent', icon: 'success', timer: 1200, showConfirmButton: false }) : alert('Request sent');
+				} catch (err) {
+					Swal && Swal.fire ? Swal.fire({ title: 'Error', text: String(err.message || err), icon: 'error' }) : alert('Error: ' + err.message);
+				}
+			});
+		})();
 		</script>
 
 		<!-- Deferment Requests Modal -->

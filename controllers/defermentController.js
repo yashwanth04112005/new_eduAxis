@@ -25,6 +25,23 @@ const deferment = {
 			return { error: error.message };
 		}
 	},
+	reject: async (defermentId) => {
+		try {
+			const theDeferment = await Deferment.findById(defermentId);
+			if (!theDeferment) {
+				throw new Error("Leave Request Not Found");
+			}
+			await Deferment.findByIdAndDelete(defermentId);
+			await messages.save(
+				Student,
+				"Leave Request Rejected!",
+				theDeferment.studentNumber
+			);
+			return true;
+		} catch (error) {
+			return { error: error.message };
+		}
+	},
 	approve: async (defermentId) => {
 		try {
 			const theDeferment = await Deferment.findByIdAndUpdate(

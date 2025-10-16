@@ -58,7 +58,7 @@ router
     // --- NEW ROUTE TO RECORD PAYMENT ---
 	.post("/record-payment", async (req, res) => {
 		try {
-			const student = req.user; // Assumes user info is attached by middleware
+			const student = req.user;  
 			let { amount, paymentFor, paymentMethod } = req.body;
 			// amount from client is ignored; admin-enforced amount is used via controller
 			if (!student || !paymentFor) {
@@ -139,7 +139,7 @@ router
 			res.status(500).json({ error: error.message });
 		}
 	})
-	// Admin delete any payment
+	  
 	.delete('/payments/:id', thisGuy.hasAccess, thisGuy.isAdmin, async (req, res) => {
 		try {
 			const result = await fees.deletePaymentByAdmin(req.params.id);

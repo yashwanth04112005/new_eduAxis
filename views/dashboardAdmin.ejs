@@ -608,10 +608,15 @@
 																<div class="uk-inline">
 																	<a data-uk-icon="icon:more-vertical"></a>
 																	<div data-uk-dropdown="mode: click; pos:top-right">
-																		<ul class="uk-nav uk-dropdown-nav">
+																				<ul class="uk-nav uk-dropdown-nav">
 																			<li class="uk-nav-header text-center">Actions</li>
-																			<% if (!teacher.approved) { %>
-																				<li><a href="/deferment/approve/<%= teacher._id %>"><span data-uk-icon="icon: check; ratio: 0.9"></span> Approve Leave</a></li>
+																					<% if (!teacher.approved) { %>
+																					<li><a href="#" data-deferment-approve="<%= teacher._id %>"><span data-uk-icon="icon: check; ratio: 0.9"></span> Approve Leave</a></li>
+																						<li>
+																							<a href="#" class="uk-text-danger" data-deferment-reject="<%= teacher._id %>">
+																								<span data-uk-icon="icon: close; ratio: 0.9"></span> Reject Leave
+																							</a>
+																						</li>
 																			<% }else{ %>
 																			<li>
 																				<a href="#" class="uk-text-danger">

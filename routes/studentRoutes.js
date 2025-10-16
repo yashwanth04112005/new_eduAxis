@@ -97,28 +97,38 @@ router
 		"/students/messages/markasread/:id",
 		thisGuy.hasAccess,
 		async (req, res) => {
-			const { id } = req.params;
-			const updatedStudent = await student.markMessagesAsRead(id);
-			if (!updatedStudent.error) {
-				req.flash("info", "Messages Updated Successfully!");
-			} else {
-				req.flash("info", updatedStudent.error);
+			try {
+				const { id } = req.params;
+				const updatedStudent = await student.markMessagesAsRead(id);
+				if (!updatedStudent.error) {
+					return res.status(200).json({ success: true, message: "Messages marked as read" });
+				}
+				return res.status(400).json({ success: false, message: updatedStudent.error });
+			} catch (e) {
+				return res.status(500).json({ success: false, message: e.message });
 			}
-			res.redirect("/dashboard");
 		}
 	)
 	.post(
 		"/students/messages/delete/:id",
 		thisGuy.hasAccess,
 		async (req, res) => {
-			const { id } = req.params;
-			const deletedStudent = await student.deleteMessages(id);
-			if (!deletedStudent.error) {
-				req.flash("info", "Messages Deleted Successfully!");
-			} else {
-				req.flash("info", deletedStudent.error);
+			try {
+				const { id } = req.params;
+				const { messageId } = req.body || {};
+				if (messageId) {
+					const result = await require('../controllers/messageController').deleteOne(require('../models/studentModel'), id, messageId);
+					if (!result.error) return res.status(200).json({ success: true, message: 'Message deleted' });
+					return res.status(400).json({ success: false, message: result.error });
+				}
+				const deletedStudent = await student.deleteMessages(id);
+				if (!deletedStudent.error) {
+					return res.status(200).json({ success: true, message: "All messages deleted" });
+				}
+				return res.status(400).json({ success: false, message: deletedStudent.error });
+			} catch (e) {
+				return res.status(500).json({ success: false, message: e.message });
 			}
-			res.redirect("/dashboard");
 		}
 	)
 	.post("/students/:id/password", thisGuy.hasAccess, thisGuy.isAdmin, async (req, res) => {

@@ -13,9 +13,16 @@ router
 			req.user._id,
 			reason
 		);
+		const wantsJson = (req.headers['content-type'] || '').includes('application/json') || (req.headers['accept'] || '').includes('application/json');
 		if (!savedDefermentRequest.error) {
+			if (wantsJson) {
+				return res.status(200).json({ success: true });
+			}
 			req.flash("info", "Leave Request Sent Successfully!");
 		} else {
+			if (wantsJson) {
+				return res.status(400).json({ success: false, message: savedDefermentRequest.error });
+			}
 			req.flash("info", savedDefermentRequest.error);
 		}
 		res.redirect("/dashboard");
@@ -48,6 +55,30 @@ router
 			req.flash("info", approvedRequest.error);
 		}
 		res.redirect("/dashboard");
+	})
+	.post('/approve/:id', hasAccess, isAdmin, async (req, res) => {
+		try {
+			const { id } = req.params;
+			const result = await deferment.approve(id);
+			if (result && result.error) {
+				return res.status(400).json({ success: false, message: result.error });
+			}
+			return res.status(200).json({ success: true });
+		} catch (err) {
+			return res.status(500).json({ success: false, message: err.message });
+		}
+	})
+	.post('/reject/:id', hasAccess, isAdmin, async (req, res) => {
+		try {
+			const { id } = req.params;
+			const result = await deferment.reject(id);
+			if (result && result.error) {
+				return res.status(400).json({ success: false, message: result.error });
+			}
+			return res.status(200).json({ success: true });
+		} catch (err) {
+			return res.status(500).json({ success: false, message: err.message });
+		}
 	});
 
 module.exports = router;

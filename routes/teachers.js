@@ -223,14 +223,16 @@ router
 		"/teachers/messages/markasread/:id",
 		thisGuy.hasAccess,
 		async (req, res) => {
-			const { id } = req.params;
-			const updatedTeacher = await teacher.markMessagesAsRead(id);
-			if (!updatedTeacher.error) {
-				req.flash("info", "Messages Updated Successfully!");
-			} else {
-				req.flash("info", updatedTeacher.error);
+			try {
+				const { id } = req.params;
+				const updatedTeacher = await teacher.markMessagesAsRead(id);
+				if (!updatedTeacher.error) {
+					return res.status(200).json({ success: true, message: "Messages marked as read" });
+				}
+				return res.status(400).json({ success: false, message: updatedTeacher.error });
+			} catch (e) {
+				return res.status(500).json({ success: false, message: e.message });
 			}
-			res.redirect("/dashboard");
 		}
 	)
 	// ? DELETE ALL MESSAGES
@@ -238,14 +240,22 @@ router
 		"/teachers/messages/delete/:id",
 		thisGuy.hasAccess,
 		async (req, res) => {
-			const { id } = req.params;
-			const deletedTeacherMessage = await teacher.deleteMessages(id);
-			if (!deletedTeacherMessage.error) {
-				req.flash("info", "Messages Deleted Successfully!");
-			} else {
-				req.flash("info", deletedTeacherMessage.error);
+			try {
+				const { id } = req.params;
+				const { messageId } = req.body || {};
+				if (messageId) {
+					const result = await require('../controllers/messageController').deleteOne(require('../models/teacherModel'), id, messageId);
+					if (!result.error) return res.status(200).json({ success: true, message: 'Message deleted' });
+					return res.status(400).json({ success: false, message: result.error });
+				}
+				const deletedTeacherMessage = await teacher.deleteMessages(id);
+				if (!deletedTeacherMessage.error) {
+					return res.status(200).json({ success: true, message: "All messages deleted" });
+				}
+				return res.status(400).json({ success: false, message: deletedTeacherMessage.error });
+			} catch (e) {
+				return res.status(500).json({ success: false, message: e.message });
 			}
-			res.redirect("/dashboard");
 		}
 	);
 

@@ -33,12 +33,30 @@ const message = {
 
 	deleteAll: async (User, studentId) => {
 		try {
-			const updatedStudent = await User.findByIdAndUpdate(
+			const result = await User.updateOne(
 				{ _id: studentId },
-				{ $set: { messages: [] } },
-				{ new: true }
+				{ $set: { messages: [] } }
 			);
-			return true;
+			if (result && result.acknowledged) {
+				return { success: true, modifiedCount: result.modifiedCount };
+			}
+			return { error: 'Delete operation not acknowledged' };
+		} catch (error) {
+			return { error: error.message };
+		}
+	},
+
+	deleteOne: async (User, studentId, messageId) => {
+		try {
+			if (!messageId) return { error: 'messageId is required' };
+			const result = await User.updateOne(
+				{ _id: studentId },
+				{ $pull: { messages: { _id: messageId } } }
+			);
+			if (result && result.acknowledged) {
+				return { success: true, modifiedCount: result.modifiedCount };
+			}
+			return { error: 'Delete operation not acknowledged' };
 		} catch (error) {
 			return { error: error.message };
 		}
