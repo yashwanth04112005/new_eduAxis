@@ -182,14 +182,18 @@ function confirmClassDelete(id) {
 
 	form.addEventListener('submit', async function(e){
 		e.preventDefault();
-		const title = (form.querySelector('#title')?.value || '').trim();
+	const title = (form.querySelector('#title')?.value || '').trim();
 		const description = (form.querySelector('#eventDescription')?.value || '').trim();
 		const eventDate = (form.querySelector('#eventDate')?.value || '').trim();
 		const author = form.querySelector('input[name="author"]')?.value || 'Admin';
 		const published = form.querySelector('input[name="published"]')?.value || 'Today';
 
+		const isNumbersOnly = title.replace(/\s+/g, '').match(/^\d+$/);
 		if (!title || !description || !eventDate) {
 			return Swal.fire({ title: 'All fields are required', icon: 'warning' });
+		}
+		if (isNumbersOnly) {
+			return Swal.fire({ title: 'Title cannot be only numbers', icon: 'warning' });
 		}
 
 		try {

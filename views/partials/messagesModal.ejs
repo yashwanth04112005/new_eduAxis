@@ -28,9 +28,56 @@
 			<div class="modal-body">
 				<div class="container-fluid" id="messagesContainer">
 					<!-- Messages will be dynamically loaded here -->
+<<<<<<< HEAD
 					<div class="uk-text-center uk-text-muted uk-padding" id="noMessagesPlaceholder">
 						<p>Loading messages...</p>
 					</div>
+=======
+					<% if (user.messages && user.messages.length > 0) { %>
+						<% user.messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(message=>{ %>
+						<div class="nature-card" data-message-id="<%= message._id || message.id %>" data-read="<%= message.read %>">
+							<div class="uk-card uk-card-small uk-card-default">
+								<div class="uk-card-header">
+									<div class="uk-grid uk-grid-small uk-text-small" data-uk-grid>
+										<div class="uk-width-expand" title="Alert" data-uk-tooltip>
+											<span class="cat-txt">Alert</span>
+										</div>
+										<div class="uk-width-auto uk-text-right uk-text-muted" title="Status" data-uk-tooltip>
+											<% if (!message.read) { %>
+											<span class="uk-text-danger">🔴</span> New
+											<% } else { %>
+											<span class="uk-text-success">🟢</span> Read
+											<% } %>
+										</div>
+										<div class="uk-width-auto">
+											<button 
+												class="uk-icon-button" 
+												uk-icon="trash"
+												onclick="deleteMessage('<%= message._id || message.id %>')"
+												title="Delete message"
+												style="color: #dc3545;"
+											></button>
+										</div>
+									</div>
+								</div>
+								<div class="uk-card-media"></div>
+								<div class="uk-card-body">
+									<h6 class="uk-margin-small-bottom uk-margin-remove-adjacent uk-text-bold">
+										<%= message.title %>
+									</h6>
+									<p class="uk-text-small uk-text-muted">
+										<%= formatDate(message.createdAt) %> at <%= new Date(message.createdAt).toLocaleTimeString() %>
+									</p>
+								</div>
+							</div>
+						</div>
+						<% }) %>
+					<% } else { %>
+						<div class="uk-text-center uk-text-muted uk-padding">
+							<p>No messages available</p>
+						</div>
+					<% } %>
+>>>>>>> ab3981dab5c017fbf32acf59e5de468edccc424b
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -113,23 +160,180 @@
 
 	function deleteAllMessages() {
 		if (window.MessageManager) {
+<<<<<<< HEAD
 			window.MessageManager.clearAll();
 			
 			// Send request to server to delete messages (optional - for persistence)
 			const userId = '<%= user._id %>';
 			const userType = '<%= theUserType %>';
 			
+=======
+			const userId = '<%= user._id %>';
+			const userType = '<%= theUserType %>';
+			const messagesContainer = document.getElementById('messagesContainer');
+			const messages = document.querySelectorAll('.nature-card');
+
+			// Animate all messages
+			messages.forEach((message, index) => {
+				// Stagger the animations
+				setTimeout(() => {
+					message.style.transition = 'all 0.3s ease';
+					message.style.opacity = '0';
+					message.style.transform = 'translateX(100px)';
+				}, index * 100); // Stagger each message by 100ms
+			});
+
+			// Send request to server
+>>>>>>> ab3981dab5c017fbf32acf59e5de468edccc424b
 			fetch(`/${userType}/messages/delete/${userId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				}
+<<<<<<< HEAD
 			}).then(response => {
 				if (response.ok) {
 					console.log('All messages deleted from server');
 				}
 			}).catch(error => {
 				console.log('Delete all messages request failed:', error);
+=======
+			})
+			.then(response => {
+				if (response.ok) {
+					// After all animations complete
+					setTimeout(() => {
+						// Remove all messages
+						messages.forEach(message => message.remove());
+
+						// Add "No messages" text with fade-in animation
+						const noMessagesDiv = document.createElement('div');
+						noMessagesDiv.className = 'uk-text-center uk-text-muted uk-padding';
+						noMessagesDiv.innerHTML = '<p>No messages available</p>';
+						noMessagesDiv.style.opacity = '0';
+						messagesContainer.appendChild(noMessagesDiv);
+
+						// Fade in the "No messages" text
+						setTimeout(() => {
+							noMessagesDiv.style.transition = 'opacity 0.3s ease';
+							noMessagesDiv.style.opacity = '1';
+						}, 10);
+
+						// Hide delete all button with fade out
+						const deleteAllBtn = document.getElementById('deleteAllMessagesBtn');
+						deleteAllBtn.style.transition = 'opacity 0.3s ease';
+						deleteAllBtn.style.opacity = '0';
+						setTimeout(() => {
+							deleteAllBtn.style.display = 'none';
+						}, 300);
+
+						// Update message count
+						if (window.messageManager) {
+							window.messageManager.updateMessageCount();
+						}
+					}, messages.length * 100 + 300); // Wait for all staggered animations to complete
+				} else {
+					// Restore messages if deletion fails
+					messages.forEach(message => {
+						message.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+						message.style.opacity = '1';
+						message.style.transform = 'translateX(0)';
+					});
+				}
+			})
+			.catch(error => {
+				console.log('Delete messages failed:', error);
+				// Restore messages
+				messages.forEach(message => {
+					message.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+					message.style.opacity = '1';
+					message.style.transform = 'translateX(0)';
+				});
+			});
+		}
+	}
+
+	function deleteMessage(messageId) {
+		const userId = '<%= user._id %>';
+		const userType = '<%= theUserType %>';
+		const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+
+		if (messageElement) {
+			// Create a backup of the element and its position
+			const elementHeight = messageElement.offsetHeight;
+			const elementClone = messageElement.cloneNode(true);
+			messageElement.style.height = elementHeight + 'px';
+
+			// Start the deletion animation
+			messageElement.style.transition = 'all 0.3s ease';
+			messageElement.style.opacity = '0';
+			messageElement.style.transform = 'translateX(100px)';
+
+			// Delete message from server
+			fetch(`/${userType}/messages/delete/${userId}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ messageId })
+			})
+			.then(response => {
+				if (response.ok) {
+					// Collapse animation
+					setTimeout(() => {
+						messageElement.style.height = '0';
+						messageElement.style.margin = '0';
+						messageElement.style.padding = '0';
+						
+						// Remove element after collapse animation
+						setTimeout(() => {
+							messageElement.remove();
+							
+							// Update messages count
+							if (window.messageManager) {
+								window.messageManager.updateMessageCount();
+							}
+
+							// Check if there are any messages left
+							const remainingMessages = document.querySelectorAll('.nature-card');
+							if (remainingMessages.length === 0) {
+								// Add "No messages" text with fade-in animation
+								const noMessagesDiv = document.createElement('div');
+								noMessagesDiv.className = 'uk-text-center uk-text-muted uk-padding';
+								noMessagesDiv.innerHTML = '<p>No messages available</p>';
+								noMessagesDiv.style.opacity = '0';
+								document.getElementById('messagesContainer').appendChild(noMessagesDiv);
+								
+								// Fade in the "No messages" text
+								setTimeout(() => {
+									noMessagesDiv.style.transition = 'opacity 0.3s ease';
+									noMessagesDiv.style.opacity = '1';
+								}, 10);
+
+								// Hide delete all button with fade out
+								const deleteAllBtn = document.getElementById('deleteAllMessagesBtn');
+								deleteAllBtn.style.transition = 'opacity 0.3s ease';
+								deleteAllBtn.style.opacity = '0';
+								setTimeout(() => {
+									deleteAllBtn.style.display = 'none';
+								}, 300);
+							}
+						}, 300);
+					}, 300);
+				} else {
+					// Restore element with bounce animation if deletion fails
+					messageElement.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+					messageElement.style.opacity = '1';
+					messageElement.style.transform = 'translateX(0)';
+				}
+			})
+			.catch(error => {
+				console.log('Delete message failed:', error);
+				// Restore element with bounce animation
+				messageElement.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+				messageElement.style.opacity = '1';
+				messageElement.style.transform = 'translateX(0)';
+>>>>>>> ab3981dab5c017fbf32acf59e5de468edccc424b
 			});
 		}
 	}

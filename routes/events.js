@@ -63,6 +63,13 @@ router.post(
       return `${day}, ${month}, ${year}`;
     }
 
+    // Validate title is not only numbers (allow letters or alphanumeric)
+    const rawTitle = (req.body.title || '').trim();
+    const titleNoSpaces = rawTitle.replace(/\s+/g, '');
+    if (!rawTitle || /^\d+$/.test(titleNoSpaces)) {
+      return res.status(400).json({ message: "Event title cannot be only numbers" });
+    }
+
     const eventDate = new Date(req.body.eventDate);
     if (isNaN(eventDate.getTime())) {
       return res.status(400).json({ message: "Invalid eventDate" });
@@ -78,7 +85,7 @@ router.post(
     const event = new Event({
       author: req.user.username,
       published: getCurrentDate(),
-      title: req.body.title,
+      title: rawTitle,
       description: req.body.description,
       eventDate: eventDate,
     });

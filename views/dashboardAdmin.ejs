@@ -303,17 +303,17 @@
 								data-uk-close
 							></button>
 							<div class="mb-3">
-								<label for="title" class="form-label"
-									>Title</label
-								>
+								<label for="title" class="form-label">Title</label>
 								<input
 									type="text"
 									class="form-control"
 									id="title"
 									name="title"
-									required 
-									
+									required
+									pattern="^(?!\\s*$)(?![0-9\\s]+$).+"
+									title="Title cannot be only numbers"
 								/>
+								<small class="form-text text-muted">Letters or letters+numbers are allowed. Numbers-only titles are not allowed.</small>
 							</div>
 							<div class="mb-3">
 								<label for="eventDescription" class="form-label"
@@ -394,30 +394,36 @@
 										
 										<div class="mb-3">
 											<label for="username" class="form-label"
-												>Username</label
+												>Username *</label
 											>
 											<input
 												type="text"
 												class="form-control"
 												id="username"
 												name="username"
-												required 
-												
+												required
+												pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9]+$"
+												onchange="validateUsername(this)"
+												placeholder="Letters and numbers only, must include at least one letter"
 											/>
+											<small class="form-text text-muted">Username must contain at least one letter, no spaces allowed</small>
 										</div>
 										<div class="mb-3">
 											<p><strong>NB: </strong>Lecturers are able to change their password from their portal.</p>
 											<label for="password" class="form-label"
-												>First Password</label
+												>First Password *</label
 											>
 											<input
 												type="password"
 												class="form-control"
 												id="password"
 												name="password"
-												required 
-												
+												required
+												minlength="5"
+												onchange="validatePassword(this)"
+												placeholder="Minimum 5 characters"
 											/>
+											<small class="form-text text-muted">Password must be at least 5 characters long</small>
 											
 										</div>
 									</div>
@@ -463,30 +469,36 @@
 										
 										<div class="mb-3">
 											<label for="username" class="form-label"
-												>Username/Registration Number</label
+												>Username/Registration Number *</label
 											>
 											<input
 												type="text"
 												class="form-control"
 												id="username"
 												name="username"
-												required 
-												
+												required
+												pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9]+$"
+												onchange="validateUsername(this)"
+												placeholder="Letters and numbers only, must include at least one letter"
 											/>
+											<small class="form-text text-muted">Username must contain at least one letter, no spaces allowed</small>
 										</div>
 										<div class="mb-3">
 											<p><strong>NB: </strong>Students are able to change their password from their portal.</p>
 											<label for="password" class="form-label"
-												>First Password</label
+												>First Password *</label
 											>
 											<input
 												type="password"
 												class="form-control"
 												id="password"
 												name="password"
-												required 
-												
+												required
+												minlength="5"
+												onchange="validatePassword(this)"
+												placeholder="Minimum 5 characters"
 											/>
+											<small class="form-text text-muted">Password must be at least 5 characters long</small>
 											
 										</div>
 									</div>
@@ -1245,5 +1257,35 @@
 		<script src="../js/sweetAlert.js"></script>
 		<script src="js/admin.js"></script>
 		<script src="js/logout.js"></script>
+
+		<script>
+		function validateUsername(input) {
+			const username = input.value.trim();
+			const usernamePattern = /^(?=.*[a-zA-Z])[a-zA-Z0-9]+$/;
+			
+			if (!usernamePattern.test(username)) {
+				input.setCustomValidity('Username must contain at least one letter and can only contain letters and numbers (no spaces)');
+			} else {
+				input.setCustomValidity('');
+			}
+		}
+
+		function validatePassword(input) {
+			if (input.value.length < 5) {
+				input.setCustomValidity('Password must be at least 5 characters long');
+			} else {
+				input.setCustomValidity('');
+			}
+		}
+
+		// Add event listeners to all username and password fields
+		document.querySelectorAll('input[type="text"][id="username"]').forEach(input => {
+			input.addEventListener('input', () => validateUsername(input));
+		});
+
+		document.querySelectorAll('input[type="password"]').forEach(input => {
+			input.addEventListener('input', () => validatePassword(input));
+		});
+		</script>
 	</body>
 </html>
